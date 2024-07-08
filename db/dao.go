@@ -26,8 +26,8 @@ type BlockDB interface {
 	GetBlockByRoot(root string) (*Block, error)
 	GetLatestProcessedBlock() (*Block, error)
 	GetEarliestUnverifiedBlock() (*Block, error)
-	UpdateBlockStatus(slot uint64, status Status) error
-	UpdateBlocksStatus(startSlot, endSlot uint64, status Status) error
+	UpdateBlockStatus(blockNumber uint64, status Status) error
+	UpdateBlocksStatus(startBlock, endBlock uint64, status Status) error
 }
 
 func (d *BlobSvcDB) GetBlock(block uint64) (*Block, error) {
@@ -66,16 +66,16 @@ func (d *BlobSvcDB) GetEarliestUnverifiedBlock() (*Block, error) {
 	return &block, nil
 }
 
-func (d *BlobSvcDB) UpdateBlockStatus(slot uint64, status Status) error {
+func (d *BlobSvcDB) UpdateBlockStatus(blockNumber uint64, status Status) error {
 	return d.db.Transaction(func(dbTx *gorm.DB) error {
-		return dbTx.Model(Block{}).Where("slot = ?", slot).Updates(
+		return dbTx.Model(Block{}).Where("block_number = ?", blockNumber).Updates(
 			Block{Status: status}).Error
 	})
 }
 
-func (d *BlobSvcDB) UpdateBlocksStatus(startSlot, endSlot uint64, status Status) error {
+func (d *BlobSvcDB) UpdateBlocksStatus(startBlock, endBlock uint64, status Status) error {
 	return d.db.Transaction(func(dbTx *gorm.DB) error {
-		return dbTx.Model(Block{}).Where("slot >= ? and slot <= ?", startSlot, endSlot).Updates(
+		return dbTx.Model(Block{}).Where("block_number >= ? and block_number <= ?", startBlock, endBlock).Updates(
 			Block{Status: status}).Error
 	})
 }

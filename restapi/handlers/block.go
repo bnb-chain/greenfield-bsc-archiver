@@ -1,77 +1,23 @@
 package handlers
 
 import (
-	"encoding/hex"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-openapi/runtime/middleware"
-
 	"greeenfield-bsc-archiver/models"
-	"greeenfield-bsc-archiver/restapi/operations/blob"
 	"greeenfield-bsc-archiver/service"
-	"greeenfield-bsc-archiver/types"
 	"greeenfield-bsc-archiver/util"
+
+	"greeenfield-bsc-archiver/restapi/operations/block"
 )
 
-func HandleGetBlobSidecars() func(params blob.GetBlobSidecarsByBlockNumParams) middleware.Responder {
-	return func(params blob.GetBlobSidecarsByBlockNumParams) middleware.Responder {
-
-		blockID := params.BlockID
-		indices := params.Indices
-		var root []byte
-		switch blockID {
-		case "genesis", "finalized":
-			return blob.NewGetBlobSidecarsByBlockNumBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("block identifier not supported, only <slot> and <block root>")))
-		default:
-			var (
-				err      error
-				sidecars []*models.Sidecar
-			)
-
-			indicesInx := make([]int64, 0)
-			for _, idx := range indices {
-				i, err := util.StringToInt64(idx)
-				if err != nil {
-					return blob.NewGetBlobSidecarsByBlockNumBadRequest().WithPayload(service.BadRequestWithError(err))
-				}
-				indicesInx = append(indicesInx, i)
-			}
-
-			root, err = hexutil.Decode(blockID)
-			if err == nil {
-				if len(root) != types.RootLength {
-					return blob.NewGetBlobSidecarsByBlockNumBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("invalid block root of length %d", len(root))))
-				}
-				sidecars, err = service.BlobSvc.GetBlobSidecarsByRoot(hex.EncodeToString(root), indicesInx)
-				if err != nil {
-					return blob.NewGetBlobSidecarsByBlockNumInternalServerError().WithPayload(service.InternalErrorWithError(err))
-				}
-			} else {
-				slot, err := util.StringToUint64(blockID)
-				if err != nil {
-					return blob.NewGetBlobSidecarsByBlockNumBadRequest().WithPayload(service.BadRequestWithError(err))
-				}
-				sidecars, err = service.BlobSvc.GetBlobSidecarsByBlockNumOrSlot(slot, indicesInx)
-				if err != nil {
-					return blob.NewGetBlobSidecarsByBlockNumInternalServerError().WithPayload(service.InternalErrorWithError(err))
-				}
-			}
-			payload := models.GetBlobSideCarsResponse{
-				Data: sidecars,
-			}
-			return blob.NewGetBlobSidecarsByBlockNumOK().WithPayload(&payload)
-		}
-	}
-}
-
-func HandleGetBSCBlobSidecars() func(params blob.GetBSCBlobSidecarsByBlockNumParams) middleware.Responder {
-	return func(params blob.GetBSCBlobSidecarsByBlockNumParams) middleware.Responder {
-
+func HandleGetBundledBlockByNumber() func(params block.GetBundledBlockByNumberParams) middleware.Responder {
+	return func(params block.GetBundledBlockByNumberParams) middleware.Responder {
 		rpcRequest := params.Body
 		if rpcRequest.Params == nil {
-			return blob.NewGetBSCBlobSidecarsByBlockNumOK().WithPayload(
-				&models.RPCResponse{
+			return block.NewGetBundledBlockByNumberOK().WithPayload(
+				&models.GetBundledBlockByNumberRPCResponse{
 					ID:      rpcRequest.ID,
 					Jsonrpc: rpcRequest.Jsonrpc,
 					Error: &models.RPCError{
@@ -83,11 +29,63 @@ func HandleGetBSCBlobSidecars() func(params blob.GetBSCBlobSidecarsByBlockNumPar
 		}
 
 		switch rpcRequest.Method {
-		case "eth_getBlobSidecars":
+
+		default:
+			return block.NewGetBundledBlockByNumberOK().WithPayload(
+				&models.GetBundledBlockByNumberRPCResponse{
+					ID:      rpcRequest.ID,
+					Jsonrpc: rpcRequest.Jsonrpc,
+					Error: &models.RPCError{
+						Code:    -32601,
+						Message: "method not supported",
+					},
+				},
+			)
+		}
+	}
+}
+
+func HandleGetBundleStartBlockID() func(params block.GetBundleStartBlockIDParams) middleware.Responder {
+	return func(params block.GetBundleStartBlockIDParams) middleware.Responder {
+		blockID := params.BlockID
+		blockNum, err := util.HexToUint64(blockID)
+		if err != nil {
+			return block.NewGetBundleStartBlockIDBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("invalid block id")))
+		}
+		id, err := service.BlockSvc.GetBundleStartBlockID(blockNum)
+		if err != nil {
+			return block.NewGetBundleStartBlockIDInternalServerError().WithPayload(service.InternalErrorWithError(err))
+		}
+
+		response := &models.GetBundleStartBlockIDRPCResponse{
+			Data: util.Uint64ToString(id),
+		}
+		return block.NewGetBundleStartBlockIDOK().WithPayload(response)
+	}
+}
+
+func HandleGetBlockByNumber() func(params block.GetBlockByNumberParams) middleware.Responder {
+	return func(params block.GetBlockByNumberParams) middleware.Responder {
+		rpcRequest := params.Body
+		if rpcRequest.Params == nil {
+			return block.NewGetBlockByNumberOK().WithPayload(
+				&models.GetBlockByNumberRPCResponse{
+					ID:      rpcRequest.ID,
+					Jsonrpc: rpcRequest.Jsonrpc,
+					Error: &models.RPCError{
+						Code:    -32600,
+						Message: "Invalid request",
+					},
+				},
+			)
+		}
+
+		switch rpcRequest.Method {
+		case "eth_getBlockByNumber":
 			blockNum, err := util.HexToUint64(rpcRequest.Params[0])
 			if err != nil {
-				return blob.NewGetBSCBlobSidecarsByBlockNumOK().WithPayload(
-					&models.RPCResponse{
+				return block.NewGetBlockByNumberOK().WithPayload(
+					&models.GetBlockByNumberRPCResponse{
 						ID:      rpcRequest.ID,
 						Jsonrpc: rpcRequest.Jsonrpc,
 						Error: &models.RPCError{
@@ -97,41 +95,82 @@ func HandleGetBSCBlobSidecars() func(params blob.GetBSCBlobSidecarsByBlockNumPar
 					},
 				)
 			}
-			sidecars, err := service.BlobSvc.GetBlobSidecarsByBlockNumOrSlot(blockNum, nil)
+			blockInfo, err := service.BlockSvc.GetBlockByBlockNumber(blockNum)
 			if err != nil {
-				return blob.NewGetBlobSidecarsByBlockNumInternalServerError().WithPayload(service.InternalErrorWithError(err))
+				return block.NewGetBlockByNumberInternalServerError().WithPayload(service.InternalErrorWithError(err))
 			}
-			// group sidecars by tx hash
-			bscTxSidecars := make(map[string]*models.BSCBlobTxSidecar)
-			for _, sidecar := range sidecars {
-				txSidecar, ok := bscTxSidecars[sidecar.TxHash]
-				if !ok {
-					txSidecar = &models.BSCBlobTxSidecar{
-						BlobSidecar: &models.BSCBlobSidecar{},
-						TxHash:      sidecar.TxHash,
-					}
-					bscTxSidecars[sidecar.TxHash] = txSidecar
-				}
-				txSidecar.BlobSidecar.Blobs = append(txSidecar.BlobSidecar.Blobs, sidecar.Blob)
-				txSidecar.BlobSidecar.Commitments = append(txSidecar.BlobSidecar.Commitments, sidecar.KzgCommitment)
-				txSidecar.BlobSidecar.Proofs = append(txSidecar.BlobSidecar.Proofs, sidecar.KzgProof)
-				txSidecar.TxIndex = util.Int64ToHex(sidecar.TxIndex)
-				txSidecar.BlockNumber = rpcRequest.Params[0]
-			}
-			// convert txSidecars to array
-			txSidecarsArr := make([]*models.BSCBlobTxSidecar, 0)
-			for _, txSidecar := range bscTxSidecars {
-				txSidecarsArr = append(txSidecarsArr, txSidecar)
-			}
-			response := &models.RPCResponse{
+
+			response := &models.GetBlockByNumberRPCResponse{
 				ID:      rpcRequest.ID,
 				Jsonrpc: rpcRequest.Jsonrpc,
-				Result:  txSidecarsArr,
+				Result:  blockInfo,
 			}
-			return blob.NewGetBSCBlobSidecarsByBlockNumOK().WithPayload(response)
+			return block.NewGetBlockByNumberOK().WithPayload(response)
+		case "eth_getBundledBlockByNumber":
+			blockNum, err := util.HexToUint64(rpcRequest.Params[0])
+			if err != nil {
+				return block.NewGetBundledBlockByNumberOK().WithPayload(
+					&models.GetBundledBlockByNumberRPCResponse{
+						ID:      rpcRequest.ID,
+						Jsonrpc: rpcRequest.Jsonrpc,
+						Error: &models.RPCError{
+							Code:    -32602,
+							Message: "invalid argument",
+						},
+					},
+				)
+			}
+			blocksInfo, err := service.BlockSvc.GetBundledBlockByBlockNumber(blockNum)
+			if err != nil {
+				return block.NewGetBundledBlockByNumberInternalServerError().WithPayload(service.InternalErrorWithError(err))
+			}
+
+			response := &models.GetBundledBlockByNumberRPCResponse{
+				ID:      rpcRequest.ID,
+				Jsonrpc: rpcRequest.Jsonrpc,
+				Result:  blocksInfo,
+			}
+			return block.NewGetBundledBlockByNumberOK().WithPayload(response)
+		case "eth_getBlockByHash":
+			valid := util.IsHexHash(rpcRequest.Params[0])
+			if !valid {
+				return block.NewGetBlockByHashOK().WithPayload(
+					&models.GetBlockByHashRPCResponse{
+						ID:      rpcRequest.ID,
+						Jsonrpc: rpcRequest.Jsonrpc,
+						Error: &models.RPCError{
+							Code:    -32602,
+							Message: "invalid argument",
+						},
+					},
+				)
+			}
+			blockInfo, err := service.BlockSvc.GetBlockByBlockHash(common.HexToHash(rpcRequest.Params[0]))
+			if err != nil {
+				return block.NewGetBlockByHashInternalServerError().WithPayload(service.InternalErrorWithError(err))
+			}
+
+			response := &models.GetBlockByHashRPCResponse{
+				ID:      rpcRequest.ID,
+				Jsonrpc: rpcRequest.Jsonrpc,
+				Result:  blockInfo,
+			}
+			return block.NewGetBlockByHashOK().WithPayload(response)
+		case "eth_blockNumber":
+			number, err := service.BlockSvc.GetLatestBlockNumber()
+			if err != nil {
+				return block.NewGetBlockNumberInternalServerError().WithPayload(service.InternalErrorWithError(err))
+			}
+
+			response := &models.GetBlockNumberRPCResponse{
+				ID:      rpcRequest.ID,
+				Jsonrpc: rpcRequest.Jsonrpc,
+				Result:  util.Uint64ToHex(number),
+			}
+			return block.NewGetBlockNumberOK().WithPayload(response)
 		default:
-			return blob.NewGetBSCBlobSidecarsByBlockNumOK().WithPayload(
-				&models.RPCResponse{
+			return block.NewGetBlockNumberOK().WithPayload(
+				&models.GetBlockNumberRPCResponse{
 					ID:      rpcRequest.ID,
 					Jsonrpc: rpcRequest.Jsonrpc,
 					Error: &models.RPCError{

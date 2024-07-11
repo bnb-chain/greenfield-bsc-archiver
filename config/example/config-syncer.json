@@ -1,8 +1,9 @@
 {
   "chain": "BSC",
   "bucket_name": "bsc-historical-blocks",
-  "start_slot_or_block": 40139900,
-  "create_bundle_slot_interval": 10,
+  "start_block": 100000,
+  "enable_indiv_block_verification": true,
+  "create_bundle_block_interval": 100,
   "bundle_not_sealed_reupload_threshold": 600,
   "beacon_rpc_addrs": [
     "https://eth2-beacon-mainnet.nodereal.io"

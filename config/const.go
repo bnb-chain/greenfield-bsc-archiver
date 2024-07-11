@@ -10,7 +10,7 @@ const (
 	EnvVarDBUserPass     = "DB_PASSWORD"
 	EnvVarPrivateKey     = "PRIVATE_KEY"
 
-	DefaultCreateBundleSlotInterval = 30
+	DefaultCreateBundleSlotInterval = 2500 // around 10MB
 
 	DefaultReUploadBundleThreshold = 3600 // in second
 

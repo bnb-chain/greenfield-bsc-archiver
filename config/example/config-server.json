@@ -1,6 +1,6 @@
 {
   "chain": "BSC",
-  "bucket_name": "yourbucketname",
+  "bucket_name": "bsc-historical-blocks",
   "bundle_service_endpoints": [
     "https://gnfd-testnet-bundle.nodereal.io"
   ],
@@ -26,5 +26,9 @@
     "use_console_logger": true,
     "use_file_logger": false,
     "compress": false
+  },
+  "metrics_config": {
+    "enable": true,
+    "sp_endpoint": "https://gnfd-testnet-sp2.bnbchain.org"
   }
 }

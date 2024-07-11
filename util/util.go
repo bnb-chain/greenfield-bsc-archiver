@@ -2,6 +2,7 @@ package util
 
 import (
 	"crypto/sha256"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -77,4 +78,15 @@ func HexToUint64(hexStr string) (uint64, error) {
 // Int64ToHex converts int64 to hex string
 func Int64ToHex(int64 int64) string {
 	return "0x" + strconv.FormatInt(int64, 16)
+}
+
+// Uint64ToHex converts uint64 to hex string
+func Uint64ToHex(uint64 uint64) string {
+	return "0x" + strconv.FormatUint(uint64, 16)
+}
+
+// IsHexHash verifies whether a string can represent a valid hex hash
+func IsHexHash(hash string) bool {
+	match, _ := regexp.MatchString(`^0x[0-9a-fA-F]{64}$`, hash)
+	return match
 }

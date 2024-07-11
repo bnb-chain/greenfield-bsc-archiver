@@ -8,11 +8,11 @@ import (
 )
 
 func TestSPClient_GetBundleObject(t *testing.T) {
-	spClient, err := NewSPClient("https://gnfd-testnet-sp3.nodereal.io")
+	spClient, err := NewSPClient("https://gnfd-testnet-sp2.bnbchain.org")
 	if err != nil {
 		t.Fatal(err)
 	}
-	objectContent, err := spClient.GetBundleObject(context.Background(), "bsc-blob", "blobs_s40202240_e40202439")
+	objectContent, err := spClient.GetBundleObject(context.Background(), "bsc-historical-blocks", "blocks_s901_e1000")
 	if err != nil {
 		fmt.Printf("error: %v", err)
 	}

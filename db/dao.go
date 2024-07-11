@@ -1,45 +1,56 @@
 package db
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"gorm.io/gorm"
 )
 
-type BlobDao interface {
+type BlockDao interface {
 	BlockDB
-	BlobDB
 	BundleDB
-	SaveBlockAndBlob(block *Block, blobs []*Blob) error
+	SaveBlock(block *Block) error
+	//BlobDB
 }
 
-type BlobSvcDB struct {
+type BlockSvcDB struct {
 	db *gorm.DB
 }
 
-func NewBlobSvcDB(db *gorm.DB) BlobDao {
-	return &BlobSvcDB{
+func NewBlockSvcDB(db *gorm.DB) BlockDao {
+	return &BlockSvcDB{
 		db,
 	}
 }
 
 type BlockDB interface {
-	GetBlock(slot uint64) (*Block, error)
+	GetBlock(blockNumber uint64) (*Block, error)
+	GetBlockByHash(blockHash common.Hash) (*Block, error)
 	GetBlockByRoot(root string) (*Block, error)
 	GetLatestProcessedBlock() (*Block, error)
 	GetEarliestUnverifiedBlock() (*Block, error)
-	UpdateBlockStatus(blockNumber uint64, status Status) error
+	UpdateBlockStatus(block uint64, status Status) error
 	UpdateBlocksStatus(startBlock, endBlock uint64, status Status) error
 }
 
-func (d *BlobSvcDB) GetBlock(block uint64) (*Block, error) {
+func (d *BlockSvcDB) GetBlock(blockNumber uint64) (*Block, error) {
 	block := Block{}
-	err := d.db.Model(Block{}).Where("slot = ?", slot).Take(&block).Error
+	err := d.db.Model(Block{}).Where("block_number = ?", blockNumber).Take(&block).Error
 	if err != nil {
 		return nil, err
 	}
 	return &block, nil
 }
 
-func (d *BlobSvcDB) GetBlockByRoot(root string) (*Block, error) {
+func (d *BlockSvcDB) GetBlockByHash(blockHash common.Hash) (*Block, error) {
+	block := Block{}
+	err := d.db.Model(Block{}).Where("block_hash = ?", blockHash).Take(&block).Error
+	if err != nil {
+		return nil, err
+	}
+	return &block, nil
+}
+
+func (d *BlockSvcDB) GetBlockByRoot(root string) (*Block, error) {
 	block := Block{}
 	err := d.db.Model(Block{}).Where("root = ?", root).Take(&block).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -48,7 +59,7 @@ func (d *BlobSvcDB) GetBlockByRoot(root string) (*Block, error) {
 	return &block, nil
 }
 
-func (d *BlobSvcDB) GetLatestProcessedBlock() (*Block, error) {
+func (d *BlockSvcDB) GetLatestProcessedBlock() (*Block, error) {
 	block := Block{}
 	err := d.db.Model(Block{}).Order("block_number desc").Take(&block).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -57,58 +68,58 @@ func (d *BlobSvcDB) GetLatestProcessedBlock() (*Block, error) {
 	return &block, nil
 }
 
-func (d *BlobSvcDB) GetEarliestUnverifiedBlock() (*Block, error) {
+func (d *BlockSvcDB) GetEarliestUnverifiedBlock() (*Block, error) {
 	block := Block{}
-	err := d.db.Model(Block{}).Where("status = ?", Processed).Order("slot asc").Take(&block).Error
+	err := d.db.Model(Block{}).Where("status = ?", Processed).Order("block_number asc").Take(&block).Error
 	if err != nil {
 		return nil, err
 	}
 	return &block, nil
 }
 
-func (d *BlobSvcDB) UpdateBlockStatus(blockNumber uint64, status Status) error {
+func (d *BlockSvcDB) UpdateBlockStatus(blockNumber uint64, status Status) error {
 	return d.db.Transaction(func(dbTx *gorm.DB) error {
 		return dbTx.Model(Block{}).Where("block_number = ?", blockNumber).Updates(
 			Block{Status: status}).Error
 	})
 }
 
-func (d *BlobSvcDB) UpdateBlocksStatus(startBlock, endBlock uint64, status Status) error {
+func (d *BlockSvcDB) UpdateBlocksStatus(startBlock, endBlock uint64, status Status) error {
 	return d.db.Transaction(func(dbTx *gorm.DB) error {
 		return dbTx.Model(Block{}).Where("block_number >= ? and block_number <= ?", startBlock, endBlock).Updates(
 			Block{Status: status}).Error
 	})
 }
 
-type BlobDB interface {
-	GetBlobByBlockID(slot uint64) ([]*Blob, error)
-	GetBlobByBlockIDAndIndices(slot uint64, indices []int64) ([]*Blob, error)
-	GetBlobBetweenBlocks(startSlot, endSlot uint64) ([]*Blob, error)
-}
-
-func (d *BlobSvcDB) GetBlobByBlockID(slot uint64) ([]*Blob, error) {
-	blobs := make([]*Blob, 0)
-	if err := d.db.Where("slot = ?", slot).Order("idx asc").Find(&blobs).Error; err != nil {
-		return blobs, err
-	}
-	return blobs, nil
-}
-
-func (d *BlobSvcDB) GetBlobByBlockIDAndIndices(slot uint64, indices []int64) ([]*Blob, error) {
-	blobs := make([]*Blob, 0)
-	if err := d.db.Where("slot = ? and idx in (?)", slot, indices).Order("idx asc").Find(&blobs).Error; err != nil {
-		return blobs, err
-	}
-	return blobs, nil
-}
-
-func (d *BlobSvcDB) GetBlobBetweenBlocks(startSlot, endSlot uint64) ([]*Blob, error) {
-	blobs := make([]*Blob, 0)
-	if err := d.db.Where("slot >= ? and slot <= ?", startSlot, endSlot).Order("idx asc").Find(&blobs).Error; err != nil {
-		return blobs, err
-	}
-	return blobs, nil
-}
+//type BlobDB interface {
+//	GetBlobByBlockID(slot uint64) ([]*Blob, error)
+//	GetBlobByBlockIDAndIndices(slot uint64, indices []int64) ([]*Blob, error)
+//	GetBlobBetweenBlocks(startSlot, endSlot uint64) ([]*Blob, error)
+//}
+//
+//func (d *BlockSvcDB) GetBlobByBlockID(slot uint64) ([]*Blob, error) {
+//	blobs := make([]*Blob, 0)
+//	if err := d.db.Where("slot = ?", slot).Order("idx asc").Find(&blobs).Error; err != nil {
+//		return blobs, err
+//	}
+//	return blobs, nil
+//}
+//
+//func (d *BlockSvcDB) GetBlobByBlockIDAndIndices(slot uint64, indices []int64) ([]*Blob, error) {
+//	blobs := make([]*Blob, 0)
+//	if err := d.db.Where("slot = ? and idx in (?)", slot, indices).Order("idx asc").Find(&blobs).Error; err != nil {
+//		return blobs, err
+//	}
+//	return blobs, nil
+//}
+//
+//func (d *BlockSvcDB) GetBlobBetweenBlocks(startSlot, endSlot uint64) ([]*Blob, error) {
+//	blobs := make([]*Blob, 0)
+//	if err := d.db.Where("slot >= ? and slot <= ?", startSlot, endSlot).Order("idx asc").Find(&blobs).Error; err != nil {
+//		return blobs, err
+//	}
+//	return blobs, nil
+//}
 
 type BundleDB interface {
 	GetBundle(name string) (*Bundle, error)
@@ -117,7 +128,7 @@ type BundleDB interface {
 	UpdateBundleStatus(bundleName string, status InnerBundleStatus) error
 }
 
-func (d *BlobSvcDB) GetBundle(name string) (*Bundle, error) {
+func (d *BlockSvcDB) GetBundle(name string) (*Bundle, error) {
 	bundle := Bundle{}
 	err := d.db.Model(Bundle{}).Where("name = ?", name).Take(&bundle).Error
 	if err != nil {
@@ -126,7 +137,7 @@ func (d *BlobSvcDB) GetBundle(name string) (*Bundle, error) {
 	return &bundle, nil
 }
 
-func (d *BlobSvcDB) GetLatestFinalizingBundle() (*Bundle, error) {
+func (d *BlockSvcDB) GetLatestFinalizingBundle() (*Bundle, error) {
 	bundle := Bundle{}
 	err := d.db.Model(Bundle{}).Where("status = ? and calibrated = false", Finalizing).Order("id desc").Take(&bundle).Error
 	if err != nil {
@@ -135,7 +146,7 @@ func (d *BlobSvcDB) GetLatestFinalizingBundle() (*Bundle, error) {
 	return &bundle, nil
 }
 
-func (d *BlobSvcDB) CreateBundle(b *Bundle) error {
+func (d *BlockSvcDB) CreateBundle(b *Bundle) error {
 	return d.db.Transaction(func(dbTx *gorm.DB) error {
 		err := dbTx.Create(b).Error
 		if err != nil && MysqlErrCode(err) == ErrDuplicateEntryCode {
@@ -145,24 +156,18 @@ func (d *BlobSvcDB) CreateBundle(b *Bundle) error {
 	})
 }
 
-func (d *BlobSvcDB) UpdateBundleStatus(bundleName string, status InnerBundleStatus) error {
+func (d *BlockSvcDB) UpdateBundleStatus(bundleName string, status InnerBundleStatus) error {
 	return d.db.Transaction(func(dbTx *gorm.DB) error {
 		return dbTx.Model(Bundle{}).Where("name = ?", bundleName).Updates(
 			Bundle{Status: status}).Error
 	})
 }
 
-func (d *BlobSvcDB) SaveBlockAndBlob(block *Block, blobs []*Blob) error {
+func (d *BlockSvcDB) SaveBlock(block *Block) error {
 	return d.db.Transaction(func(dbTx *gorm.DB) error {
 		err := dbTx.Save(block).Error
 		if err != nil && MysqlErrCode(err) != ErrDuplicateEntryCode {
 			return err
-		}
-		if len(blobs) != 0 {
-			err = dbTx.Save(blobs).Error
-			if err != nil && MysqlErrCode(err) != ErrDuplicateEntryCode {
-				return err
-			}
 		}
 		return nil
 	})
@@ -176,7 +181,7 @@ func AutoMigrateDB(db *gorm.DB) {
 	if err = db.AutoMigrate(&Block{}); err != nil {
 		panic(err)
 	}
-	if err = db.AutoMigrate(&Blob{}); err != nil {
-		panic(err)
-	}
+	//if err = db.AutoMigrate(&Blob{}); err != nil {
+	//	panic(err)
+	//}
 }

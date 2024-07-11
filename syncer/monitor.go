@@ -8,7 +8,7 @@ import (
 	"greeenfield-bsc-archiver/metrics"
 )
 
-func (s *BlobSyncer) monitorQuota() {
+func (s *BlockIndexer) monitorQuota() {
 	if s.spClient == nil {
 		return
 	}

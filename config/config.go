@@ -22,16 +22,18 @@ const (
 )
 
 type SyncerConfig struct {
-	Chain                            string        `json:"chain"`                                // support ETH and BSC
+	Chain                            string        `json:"chain"`                                // support BSC
 	BucketName                       string        `json:"bucket_name"`                          // BucketName is the identifier of bucket on Greenfield that store blob
-	StartSlotOrBlock                 uint64        `json:"start_slot_or_block"`                  // StartSlotOrBlock is used to init the syncer which slot of beacon chain to synced from, only need to provide once.
+	StartBlock                       uint64        `json:"start_block"`                          // StartBlock is used to init the syncer which block synced from, only need to provide once.
 	CreateBundleBlockInterval        uint64        `json:"create_bundle_block_interval"`         // CreateBundleBlockInterval defines the number of block that syncer would assemble blobs and upload to bundle service
 	BundleServiceEndpoints           []string      `json:"bundle_service_endpoints"`             // BundleServiceEndpoints is a list of bundle service address
 	BeaconRPCAddrs                   []string      `json:"beacon_rpc_addrs"`                     // BeaconRPCAddrs is a list of beacon chain RPC address
 	RPCAddrs                         []string      `json:"rpc_addrs"`                            // RPCAddrs ETH or BSC RPC addr
+	GnfdRpcAddr                      string        `json:"gnfd_rpc_addr"`                        // GnfdRpcAddr is the Greenfield RPC address
 	TempDir                          string        `json:"temp_dir"`                             // TempDir is used to store blobs and created bundle
 	PrivateKey                       string        `json:"private_key"`                          // PrivateKey is the key of bucket owner, request to bundle service will be signed by it as well.
 	BundleNotSealedReuploadThreshold int64         `json:"bundle_not_sealed_reupload_threshold"` // BundleNotSealedReuploadThreshold for re-uploading a bundle if it cant be sealed within the time threshold.
+	EnableIndivBlockVerification     bool          `json:"enable_indiv_block_verification"`      // EnableIndivBlobVerification is used to enable individual block verification, otherwise only bundle level verification is performed.
 	DBConfig                         DBConfig      `json:"db_config"`
 	MetricsConfig                    MetricsConfig `json:"metrics_config"`
 	LogConfig                        LogConfig     `json:"log_config"`
@@ -44,15 +46,15 @@ func (s *SyncerConfig) Validate() {
 	if len(s.BucketName) == 0 {
 		panic("the Greenfield bucket name is not is not provided")
 	}
-	if s.StartSlotOrBlock == 0 {
-		panic("the start slot to sync slot is not provided")
-	}
+	//if s.StartBlock == 0 {
+	//	panic("the start block to sync slot is not provided")
+	//}
 	if len(s.BundleServiceEndpoints) == 0 {
 		panic("BundleService endpoints should not be empty")
 	}
-	if s.Chain == ETH && len(s.BeaconRPCAddrs) == 0 {
-		panic("beacon rpc address should not be empty")
-	}
+	//if s.Chain == ETH && len(s.BeaconRPCAddrs) == 0 {
+	//	panic("beacon rpc address should not be empty")
+	//}
 	if len(s.RPCAddrs) == 0 {
 		panic("eth rpc address should not be empty")
 	}
@@ -87,11 +89,12 @@ func (s *SyncerConfig) GetReUploadBundleThresh() int64 {
 }
 
 type ServerConfig struct {
-	Chain                  string      `json:"chain"`
-	BucketName             string      `json:"bucket_name"`
-	BundleServiceEndpoints []string    `json:"bundle_service_endpoints"` // BundleServiceEndpoints is a list of bundle service address
-	CacheConfig            CacheConfig `json:"cache_config"`
-	DBConfig               DBConfig    `json:"db_config"`
+	Chain                  string        `json:"chain"`
+	BucketName             string        `json:"bucket_name"`
+	BundleServiceEndpoints []string      `json:"bundle_service_endpoints"` // BundleServiceEndpoints is a list of bundle service address
+	CacheConfig            CacheConfig   `json:"cache_config"`
+	DBConfig               DBConfig      `json:"db_config"`
+	MetricsConfig          MetricsConfig `json:"metrics_config"`
 }
 
 func (s *ServerConfig) Validate() {

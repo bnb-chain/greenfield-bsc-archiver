@@ -1,3 +1,3 @@
 package service
 
-var BlobSvc Blob
+var BlockSvc Block

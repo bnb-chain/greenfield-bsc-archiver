@@ -13,8 +13,6 @@ type GeneralSideCar struct {
 }
 
 type Block struct {
-	Header      *types.Header
-	Txs         []*types.Transaction
-	Uncles      []*types.Header
-	Withdrawals []*types.Withdrawal
+	Header *types.Header `json:"-"`
+	Body   *types.Body   `json:"-"`
 }

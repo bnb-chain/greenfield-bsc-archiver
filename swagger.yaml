@@ -1,20 +1,112 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: Blob Hub Service API
-  description: API for handling blob query in the Blob Hub.
-host: 'blob-hub'
+  title: Greenfield BSC Archiver Service API
+  description: API for handling block query in the Greenfield BSC Archiver.
+host: 'greenfield-bsc-archiver'
 #basePath: "/eth/v1"
 schemes:
   - http
 
 paths:
-  /eth/v1/beacon/blob_sidecars/{block_id}:
+  /:
+    post:
+      tags:
+        - "block"
+      summary: "Returns information of the block matching the given block number."
+      operationId: "getBlockByNumber"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RPCRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GetBlockByNumberRPCResponse"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+  /eth_getBundledBlockByNumber:
+    post:
+      tags:
+        - "block"
+      summary: "Returns information of the block bundle matching the given block number."
+      operationId: "getBundledBlockByNumber"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RPCRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GetBundledBlockByNumberRPCResponse"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+  /eth_blockNumber:
+    post:
+      tags:
+        - "block"
+      summary: "Returns the latest block number of the blockchain"
+      operationId: "getBlockNumber"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RPCRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GetBlockNumberRPCResponse"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+  /eth_getBlockByHash:
+    post:
+      tags:
+        - "block"
+      summary: "Returns information of the block matching the given block hash"
+      operationId: "getBlockByHash"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RPCRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GetBlockByHashRPCResponse"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+  /bsc/v1/blocks/{block_id}/bundle/start:
     get:
       tags:
-        - "blob"
-      summary: "Get blob sidecars by block num"
-      operationId: "getBlobSidecarsByBlockNum"
+        - "block"
+      summary: "Get start block id of this bundle"
+      operationId: "getBundleStartBlockID"
       produces:
         - "application/json"
       parameters:
@@ -24,17 +116,11 @@ paths:
           required: true
           type: string
           minLength: 1
-        - name: "indices"
-          in: "query"
-          description: "Array of indices for blob sidecars to request for in the specified block. Returns all blob sidecars in the block if not specified"
-          type: array
-          items:
-            type: string
       responses:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/GetBlobSideCarsResponse"
+            $ref: "#/definitions/GetBundleStartBlockIDRPCResponse"
         "400":
           description: 'Bad Request'
           schema:
@@ -48,88 +134,126 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /:
-    post:
-      tags:
-        - "blob"
-      summary: "Get BSC blob sidecars by block num"
-      operationId: "getBSCBlobSidecarsByBlockNum"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          required: true
-          schema:
-            $ref: "#/definitions/RPCRequest"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/RPCResponse"
-        "500":
-          description: 'internal server error'
-          schema:
-            $ref: "#/definitions/Error"
-
 definitions:
-  GetBlobSideCarsResponse:
+  Block:
     type: object
     properties:
-      code:
-        type: integer
-        description: "status code"
-        example: 200
-      message:
-        type: string
-        description: "error message if there is error"
-        example: "signature invalid"
-      data:
-        description: "actual data for request"
-        type: array
-        items:
-          $ref: "#/definitions/Sidecar"
-  Sidecar:
+      Header:
+        $ref: '#/definitions/Header'
+      Body:
+        $ref: '#/definitions/Body'
+
+  Header:
     type: object
     properties:
-      index:
+      ParentHash:
         type: string
-        example: 1
-      blob:
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      Sha3Uncles:
         type: string
-      kzg_commitment:
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      Miner:
         type: string
-      kzg_proof:
+        example: "0x1234567890abcdef1234567890abcdef12345678"
+      StateRoot:
         type: string
-      kzg_commitment_inclusion_proof:
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      TransactionsRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      ReceiptsRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      LogsBloom:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      Difficulty:
+        type: string
+        example: "0x186a1"
+      Number:
+        type: string
+        example: "100000"
+      GasLimit:
+        type: string
+        example: "8000000"
+      GasUsed:
+        type: string
+        example: "21000"
+      Timestamp:
+        type: string
+        example: "0x5f4e5f87"
+      ExtraData:
+        type: string
+        example: "0x123456"
+      MixHash:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      Nonce:
+        type: string
+        example: "0x0000000000000042"
+      BaseFeePerGas:
+        type: string
+        example: "1000000000"
+      WithdrawalsRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      BlobGasUsed:
+        type: string
+        example: "1000"
+      ExcessBlobGas:
+        type: string
+        example: "500"
+      ParentBeaconBlockRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+
+  Body:
+    type: object
+    properties:
+      Transactions:
         type: array
-        x-omitempty: true
         items:
-          type: string
-      signed_block_header:
-        type: object
-        properties:
-          signature:
-            type: string
-          message:
-            type: object
-            properties:
-              slot:
-                type: string
-              proposer_index:
-                type: string
-              parent_root:
-                type: string
-              state_root:
-                type: string
-              body_root:
-                type: string
-      tx_index:
-        type: integer
-        format: int64
-        x-omitempty: true
-      tx_hash:
+          $ref: '#/definitions/Transaction'
+      Uncles:
+        type: array
+        items:
+          $ref: '#/definitions/Header'
+      Withdrawals:
+        type: array
+        items:
+          $ref: '#/definitions/Withdrawal'
+
+  Transaction:
+    type: object
+    properties:
+      hash:
         type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      from:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef12345678"
+      to:
+        type: string
+        example: "0xabcdef1234567890abcdef1234567890abcdef12"
+      value:
+        type: string
+        example: "1000000000"
+
+  Withdrawal:
+    type: object
+    properties:
+      Index:
+        type: string
+        example: "1"
+      Validator:
+        type: string
+        example: "12345"
+      Address:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef12345678"
+      Amount:
+        type: string
+        example: "1000000"
 
   RPCRequest:
     type: object
@@ -139,7 +263,7 @@ definitions:
         example: "2.0"
       method:
         type: string
-        example: "eth_getBlobSidecars"
+        example: "eth_getBlockByNumber"
       params:
         type: array
         items:
@@ -149,7 +273,22 @@ definitions:
         type: integer
         example: 1
 
-  RPCResponse:
+  GetBlockByNumberRPCResponse:
+    type: object
+    properties:
+      jsonrpc:
+        type: string
+        example: "2.0"
+      result:
+        type: object
+        $ref: "#/definitions/Block"
+      id:
+        type: integer
+        example: 1
+      error:
+        $ref: "#/definitions/RPCError"
+
+  GetBundledBlockByNumberRPCResponse:
     type: object
     properties:
       jsonrpc:
@@ -158,43 +297,57 @@ definitions:
       result:
         type: array
         items:
-          $ref: "#/definitions/BSCBlobTxSidecar"
+            $ref: "#/definitions/Block"
       id:
         type: integer
         example: 1
       error:
         $ref: "#/definitions/RPCError"
 
-
-  BSCBlobSidecar:
+  GetBlockNumberRPCResponse:
     type: object
     properties:
-      blobs:
-        type: array
-        items:
-          type: string
-      commitments:
-        type: array
-        items:
-          type: string
-      proofs:
-        type: array
-        items:
-          type: "string"
+      jsonrpc:
+        type: string
+        example: "2.0"
+      result:
+        type: string
+        example: "0x1"
+      id:
+        type: integer
+        example: 1
+      error:
+        $ref: "#/definitions/RPCError"
 
-  BSCBlobTxSidecar:
+  GetBlockByHashRPCResponse:
     type: object
     properties:
-      blobSidecar:
-        $ref: "#/definitions/BSCBlobSidecar"
-      blockNumber:
+      jsonrpc:
         type: string
-      blockHash:
+        example: "2.0"
+      result:
+        type: object
+        $ref: "#/definitions/Block"
+      id:
+        type: integer
+        example: 1
+      error:
+        $ref: "#/definitions/RPCError"
+  GetBundleStartBlockIDRPCResponse:
+    type: object
+    properties:
+      code:
         type: string
-      txIndex:
+        description: "status code"
+        example: 200
+      message:
         type: string
-      txHash:
+        description: "error message if there is error"
+        example: "signature invalid"
+      data:
+        description: "actual data for request"
         type: string
+        example: 1
 
   RPCError:
     type: object

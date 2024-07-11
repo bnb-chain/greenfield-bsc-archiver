@@ -17,7 +17,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	modle "github.com/node-real/greenfield-bundle-service/models"
+	model "github.com/node-real/greenfield-bundle-service/models"
 	"github.com/node-real/greenfield-bundle-service/types"
 
 	bundlesdk "github.com/bnb-chain/greenfield-bundle-sdk/bundle"
@@ -162,7 +162,7 @@ func (c *BundleClient) DeleteBundle(bundleName, bucketName string) error {
 
 func (c *BundleClient) UploadAndFinalizeBundle(bundleName, bucketName, bundleDir, bundlePath string) error {
 
-	bundleObject, _, err := bundleDirectory(bundleDir)
+	bundleObject, _, err := BundleObjectFromDirectory(bundleDir)
 	if err != nil {
 		return err
 	}
@@ -280,7 +280,7 @@ func (c *BundleClient) UploadObject(fileName, bucketName, bundleName, contentTyp
 	return nil
 }
 
-func (c *BundleClient) GetBundleInfo(bucketName, bundleName string) (*modle.QueryBundleResponse, error) {
+func (c *BundleClient) GetBundleInfo(bucketName, bundleName string) (*model.QueryBundleResponse, error) {
 	req, err := http.NewRequest("GET", c.host+fmt.Sprintf(pathGetBundleInfo, bucketName, bundleName), nil)
 	if err != nil {
 		return nil, err
@@ -300,7 +300,7 @@ func (c *BundleClient) GetBundleInfo(bucketName, bundleName string) (*modle.Quer
 	if err != nil {
 		return nil, err
 	}
-	bundle := &modle.QueryBundleResponse{}
+	bundle := &model.QueryBundleResponse{}
 	return bundle, json.Unmarshal(body, bundle)
 }
 
@@ -364,7 +364,7 @@ func (c *BundleClient) signMessage(message []byte) ([]byte, error) {
 	return signature, err
 }
 
-func bundleDirectory(dir string) (io.ReadSeekCloser, int64, error) {
+func BundleObjectFromDirectory(dir string) (io.ReadSeekCloser, int64, error) {
 	b, err := bundlesdk.NewBundle()
 	if err != nil {
 		return nil, 0, err

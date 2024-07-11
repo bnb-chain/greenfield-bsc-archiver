@@ -13,8 +13,6 @@ import (
 	"greeenfield-bsc-archiver/types"
 )
 
-const prefixHex = "0x"
-
 type Block interface {
 	GetBlockByBlockNumber(blockNumber uint64) (*models.Block, error)
 	GetBundledBlockByBlockNumber(blockNumber uint64) ([]*models.Block, error)

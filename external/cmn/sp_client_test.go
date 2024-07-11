@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSPClient_GetBundleObject(t *testing.T) {
@@ -17,5 +19,6 @@ func TestSPClient_GetBundleObject(t *testing.T) {
 		fmt.Printf("error: %v", err)
 	}
 	objectBytes, err := io.ReadAll(objectContent)
+	assert.Nil(t, err)
 	t.Log(string(objectBytes))
 }

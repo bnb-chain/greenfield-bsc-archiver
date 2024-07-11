@@ -130,7 +130,7 @@ func (b *BlockIndexer) sync() error {
 	ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
 	defer cancel()
 
-	finalizedBlockNum, err := b.client.GetFinalizedBlockNum(context.Background())
+	finalizedBlockNum, err := b.client.GetFinalizedBlockNum(ctx)
 	if err != nil {
 		return err
 	}
@@ -346,11 +346,7 @@ func (b *BlockIndexer) LoadProgressAndResume(nextBlockID uint64) error {
 }
 
 func (b *BlockIndexer) toBlock(block *ethtypes.Block, blockNumber uint64, bundleName string) (*db.Block, error) {
-	var (
-		blockReturn *db.Block
-	)
-
-	blockReturn = &db.Block{
+	blockReturn := &db.Block{
 		BlockHash:   block.Hash(),
 		BlockNumber: blockNumber,
 		BundleName:  bundleName,

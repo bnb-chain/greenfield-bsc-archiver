@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// RPCRequest RPC request
+// GetBlockByNumberRPCRequest get block by number RPC request
 //
-// swagger:model RPCRequest
-type RPCRequest struct {
+// swagger:model GetBlockByNumberRPCRequest
+type GetBlockByNumberRPCRequest struct {
 
 	// id
 	// Example: 1
@@ -34,18 +34,18 @@ type RPCRequest struct {
 	Params []string `json:"params"`
 }
 
-// Validate validates this RPC request
-func (m *RPCRequest) Validate(formats strfmt.Registry) error {
+// Validate validates this get block by number RPC request
+func (m *GetBlockByNumberRPCRequest) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this RPC request based on context it is used
-func (m *RPCRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this get block by number RPC request based on context it is used
+func (m *GetBlockByNumberRPCRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *RPCRequest) MarshalBinary() ([]byte, error) {
+func (m *GetBlockByNumberRPCRequest) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -53,8 +53,8 @@ func (m *RPCRequest) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *RPCRequest) UnmarshalBinary(b []byte) error {
-	var res RPCRequest
+func (m *GetBlockByNumberRPCRequest) UnmarshalBinary(b []byte) error {
+	var res GetBlockByNumberRPCRequest
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

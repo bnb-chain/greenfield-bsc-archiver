@@ -91,36 +91,6 @@ func (d *BlockSvcDB) UpdateBlocksStatus(startBlock, endBlock uint64, status Stat
 	})
 }
 
-//type BlobDB interface {
-//	GetBlobByBlockID(slot uint64) ([]*Blob, error)
-//	GetBlobByBlockIDAndIndices(slot uint64, indices []int64) ([]*Blob, error)
-//	GetBlobBetweenBlocks(startSlot, endSlot uint64) ([]*Blob, error)
-//}
-//
-//func (d *BlockSvcDB) GetBlobByBlockID(slot uint64) ([]*Blob, error) {
-//	blobs := make([]*Blob, 0)
-//	if err := d.db.Where("slot = ?", slot).Order("idx asc").Find(&blobs).Error; err != nil {
-//		return blobs, err
-//	}
-//	return blobs, nil
-//}
-//
-//func (d *BlockSvcDB) GetBlobByBlockIDAndIndices(slot uint64, indices []int64) ([]*Blob, error) {
-//	blobs := make([]*Blob, 0)
-//	if err := d.db.Where("slot = ? and idx in (?)", slot, indices).Order("idx asc").Find(&blobs).Error; err != nil {
-//		return blobs, err
-//	}
-//	return blobs, nil
-//}
-//
-//func (d *BlockSvcDB) GetBlobBetweenBlocks(startSlot, endSlot uint64) ([]*Blob, error) {
-//	blobs := make([]*Blob, 0)
-//	if err := d.db.Where("slot >= ? and slot <= ?", startSlot, endSlot).Order("idx asc").Find(&blobs).Error; err != nil {
-//		return blobs, err
-//	}
-//	return blobs, nil
-//}
-
 type BundleDB interface {
 	GetBundle(name string) (*Bundle, error)
 	GetLatestFinalizingBundle() (*Bundle, error)
@@ -181,7 +151,4 @@ func AutoMigrateDB(db *gorm.DB) {
 	if err = db.AutoMigrate(&Block{}); err != nil {
 		panic(err)
 	}
-	//if err = db.AutoMigrate(&Blob{}); err != nil {
-	//	panic(err)
-	//}
 }

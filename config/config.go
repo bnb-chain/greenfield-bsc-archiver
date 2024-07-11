@@ -52,9 +52,6 @@ func (s *SyncerConfig) Validate() {
 	if len(s.BundleServiceEndpoints) == 0 {
 		panic("BundleService endpoints should not be empty")
 	}
-	//if s.Chain == ETH && len(s.BeaconRPCAddrs) == 0 {
-	//	panic("beacon rpc address should not be empty")
-	//}
 	if len(s.RPCAddrs) == 0 {
 		panic("eth rpc address should not be empty")
 	}

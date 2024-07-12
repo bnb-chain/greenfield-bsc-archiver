@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -15,25 +16,112 @@ import (
 
 // Block block
 //
-// swagger:model Block
+// swagger:model block
 type Block struct {
 
-	// body
-	Body *Body `json:"Body,omitempty"`
+	// base fee per gas
+	// Example: 1000000000
+	BaseFeePerGas *string `json:"baseFeePerGas,omitempty"`
 
-	// header
-	Header *Header `json:"Header,omitempty"`
+	// blob gas used
+	// Example: 1000
+	BlobGasUsed *string `json:"blobGasUsed,omitempty"`
+
+	// difficulty
+	// Example: 0x186a1
+	Difficulty *string `json:"difficulty,omitempty"`
+
+	// excess blob gas
+	// Example: 500
+	ExcessBlobGas *string `json:"excessBlobGas,omitempty"`
+
+	// extra data
+	// Example: 0x123456
+	ExtraData string `json:"extraData,omitempty"`
+
+	// gas limit
+	// Example: 8000000
+	GasLimit string `json:"gasLimit,omitempty"`
+
+	// gas used
+	// Example: 21000
+	GasUsed string `json:"gasUsed,omitempty"`
+
+	// logs bloom
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	LogsBloom string `json:"logsBloom,omitempty"`
+
+	// miner
+	// Example: 0x1234567890abcdef1234567890abcdef12345678
+	Miner string `json:"miner,omitempty"`
+
+	// mix hash
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	MixHash string `json:"mixHash,omitempty"`
+
+	// nonce
+	// Example: 0x0000000000000042
+	Nonce string `json:"nonce,omitempty"`
+
+	// number
+	// Example: 100000
+	Number *string `json:"number,omitempty"`
+
+	// parent beacon block root
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	ParentBeaconBlockRoot *string `json:"parentBeaconBlockRoot,omitempty"`
+
+	// parent hash
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	ParentHash string `json:"parentHash,omitempty"`
+
+	// receipts root
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	ReceiptsRoot string `json:"receiptsRoot,omitempty"`
+
+	// sha3 uncles
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	Sha3Uncles string `json:"sha3Uncles,omitempty"`
+
+	// state root
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	StateRoot string `json:"stateRoot,omitempty"`
+
+	// timestamp
+	// Example: 0x5f4e5f87
+	Timestamp string `json:"timestamp,omitempty"`
+
+	// transactions
+	Transactions []*Transaction `json:"transactions"`
+
+	// transactions root
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	TransactionsRoot string `json:"transactionsRoot,omitempty"`
+
+	// uncles
+	Uncles []*Header `json:"uncles"`
+
+	// withdrawals
+	Withdrawals []*Withdrawal `json:"withdrawals"`
+
+	// withdrawals root
+	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+	WithdrawalsRoot *string `json:"withdrawalsRoot,omitempty"`
 }
 
 // Validate validates this block
 func (m *Block) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateBody(formats); err != nil {
+	if err := m.validateTransactions(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateHeader(formats); err != nil {
+	if err := m.validateUncles(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateWithdrawals(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -43,39 +131,79 @@ func (m *Block) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Block) validateBody(formats strfmt.Registry) error {
-	if swag.IsZero(m.Body) { // not required
+func (m *Block) validateTransactions(formats strfmt.Registry) error {
+	if swag.IsZero(m.Transactions) { // not required
 		return nil
 	}
 
-	if m.Body != nil {
-		if err := m.Body.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("Body")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("Body")
-			}
-			return err
+	for i := 0; i < len(m.Transactions); i++ {
+		if swag.IsZero(m.Transactions[i]) { // not required
+			continue
 		}
+
+		if m.Transactions[i] != nil {
+			if err := m.Transactions[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("transactions" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("transactions" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
 }
 
-func (m *Block) validateHeader(formats strfmt.Registry) error {
-	if swag.IsZero(m.Header) { // not required
+func (m *Block) validateUncles(formats strfmt.Registry) error {
+	if swag.IsZero(m.Uncles) { // not required
 		return nil
 	}
 
-	if m.Header != nil {
-		if err := m.Header.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("Header")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("Header")
-			}
-			return err
+	for i := 0; i < len(m.Uncles); i++ {
+		if swag.IsZero(m.Uncles[i]) { // not required
+			continue
 		}
+
+		if m.Uncles[i] != nil {
+			if err := m.Uncles[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("uncles" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("uncles" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *Block) validateWithdrawals(formats strfmt.Registry) error {
+	if swag.IsZero(m.Withdrawals) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Withdrawals); i++ {
+		if swag.IsZero(m.Withdrawals[i]) { // not required
+			continue
+		}
+
+		if m.Withdrawals[i] != nil {
+			if err := m.Withdrawals[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("withdrawals" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("withdrawals" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
@@ -85,11 +213,15 @@ func (m *Block) validateHeader(formats strfmt.Registry) error {
 func (m *Block) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateBody(ctx, formats); err != nil {
+	if err := m.contextValidateTransactions(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateHeader(ctx, formats); err != nil {
+	if err := m.contextValidateUncles(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateWithdrawals(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -99,43 +231,76 @@ func (m *Block) ContextValidate(ctx context.Context, formats strfmt.Registry) er
 	return nil
 }
 
-func (m *Block) contextValidateBody(ctx context.Context, formats strfmt.Registry) error {
+func (m *Block) contextValidateTransactions(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Body != nil {
+	for i := 0; i < len(m.Transactions); i++ {
 
-		if swag.IsZero(m.Body) { // not required
-			return nil
-		}
+		if m.Transactions[i] != nil {
 
-		if err := m.Body.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("Body")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("Body")
+			if swag.IsZero(m.Transactions[i]) { // not required
+				return nil
 			}
-			return err
+
+			if err := m.Transactions[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("transactions" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("transactions" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
 		}
+
 	}
 
 	return nil
 }
 
-func (m *Block) contextValidateHeader(ctx context.Context, formats strfmt.Registry) error {
+func (m *Block) contextValidateUncles(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Header != nil {
+	for i := 0; i < len(m.Uncles); i++ {
 
-		if swag.IsZero(m.Header) { // not required
-			return nil
-		}
+		if m.Uncles[i] != nil {
 
-		if err := m.Header.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("Header")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("Header")
+			if swag.IsZero(m.Uncles[i]) { // not required
+				return nil
 			}
-			return err
+
+			if err := m.Uncles[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("uncles" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("uncles" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
 		}
+
+	}
+
+	return nil
+}
+
+func (m *Block) contextValidateWithdrawals(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Withdrawals); i++ {
+
+		if m.Withdrawals[i] != nil {
+
+			if swag.IsZero(m.Withdrawals[i]) { // not required
+				return nil
+			}
+
+			if err := m.Withdrawals[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("withdrawals" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("withdrawals" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

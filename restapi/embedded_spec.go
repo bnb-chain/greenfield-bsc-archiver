@@ -223,40 +223,6 @@ func init() {
     }
   },
   "definitions": {
-    "Block": {
-      "type": "object",
-      "properties": {
-        "Body": {
-          "$ref": "#/definitions/Body"
-        },
-        "Header": {
-          "$ref": "#/definitions/Header"
-        }
-      }
-    },
-    "Body": {
-      "type": "object",
-      "properties": {
-        "Transactions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Transaction"
-          }
-        },
-        "Uncles": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Header"
-          }
-        },
-        "Withdrawals": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Withdrawal"
-          }
-        }
-      }
-    },
     "Error": {
       "type": "object",
       "properties": {
@@ -291,7 +257,7 @@ func init() {
         },
         "result": {
           "type": "object",
-          "$ref": "#/definitions/Block"
+          "$ref": "#/definitions/block"
         }
       }
     },
@@ -311,7 +277,7 @@ func init() {
         },
         "result": {
           "type": "object",
-          "$ref": "#/definitions/Block"
+          "$ref": "#/definitions/block"
         }
       }
     },
@@ -372,93 +338,8 @@ func init() {
         "result": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Block"
+            "$ref": "#/definitions/block"
           }
-        }
-      }
-    },
-    "Header": {
-      "type": "object",
-      "properties": {
-        "BaseFeePerGas": {
-          "type": "string",
-          "example": "1000000000"
-        },
-        "BlobGasUsed": {
-          "type": "string",
-          "example": "1000"
-        },
-        "Difficulty": {
-          "type": "string",
-          "example": "0x186a1"
-        },
-        "ExcessBlobGas": {
-          "type": "string",
-          "example": "500"
-        },
-        "ExtraData": {
-          "type": "string",
-          "example": "0x123456"
-        },
-        "GasLimit": {
-          "type": "string",
-          "example": "8000000"
-        },
-        "GasUsed": {
-          "type": "string",
-          "example": "21000"
-        },
-        "LogsBloom": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Miner": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef12345678"
-        },
-        "MixHash": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Nonce": {
-          "type": "string",
-          "example": "0x0000000000000042"
-        },
-        "Number": {
-          "type": "string",
-          "example": "100000"
-        },
-        "ParentBeaconBlockRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "ParentHash": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "ReceiptsRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Sha3Uncles": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "StateRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Timestamp": {
-          "type": "string",
-          "example": "0x5f4e5f87"
-        },
-        "TransactionsRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "WithdrawalsRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
         }
       }
     },
@@ -507,43 +388,347 @@ func init() {
         }
       }
     },
-    "Transaction": {
+    "accessList": {
       "type": "object",
       "properties": {
-        "from": {
+        "address": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "hash": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "to": {
-          "type": "string",
-          "example": "0xabcdef1234567890abcdef1234567890abcdef12"
-        },
-        "value": {
-          "type": "string",
-          "example": "1000000000"
+        "storageKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
         }
       }
     },
-    "Withdrawal": {
+    "accessTuple": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "Amount": {
+        "storageKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
+        }
+      }
+    },
+    "block": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/transaction"
+          }
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "transaction": {
+      "type": "object",
+      "properties": {
+        "accessList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/accessTuple"
+          },
+          "x-nullable": true
+        },
+        "blockHash": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1d59179991e4b016d5fcf4aba59db622f064e654a82714e468c07f9f54efebd2"
+        },
+        "blockNumber": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x280468f"
+        },
+        "chainId": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x61"
+        },
+        "from": {
+          "type": "string",
+          "example": "0x5478b551e1c42e56417c44245f10b20e3b6347e8"
+        },
+        "gas": {
+          "type": "string",
+          "example": "0x7a1200"
+        },
+        "gasPrice": {
+          "type": "string",
+          "example": "0x12a05f200"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x5f5def5f5f9352d8a421c692bd51541c308b4a14c8044a2680cb6db811caf2d5"
+        },
+        "input": {
+          "type": "string",
+          "example": "0xb1dc65a400011eab462cabbd1f14fd9ab59a179156b71ed2c40dcab009bf2d870d27f157000000000000000000000000000000000000000000000000000000000067fd016d69030d5cb1244dc8531787cfc96f83b6d77c347e8796b1d1ca94a36a4c2f6a00000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000030000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000004b200000000000000000000000000000000000000000000000000000000000004b212e0e50632d2b5f1313dcf8c2c9b3044e7c7424bc94860d72f72174c2122bf618000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000067a474c11eb16492411f76cd717570c10d39a82cea3568e35a2f3b9d8655f55494e5576f4f3353b92361631f467db0bfae0fcf3fe199eef274da5bad572cedb3805fbf1ba1c001c2dcaa3a766bd2f928fe08e21dfd02715c94d615967be3e2a36c5021530db5c349bdfec118a6b3852701d540b18bb952b3905645e20bff695582e588e165d749f45965598e42181ffe0a9bbdad13d3ce057be0e5bacc2c61bfc4148087e4c0213d3ecfb2bbd9b9d65f7d3d3d980da0dc5f97080b961920c525100000000000000000000000000000000000000000000000000000000000000066ac29d0520e21a66d420d19f168bc5208ab5fbbbbc6809f03cc68fc0769f65d76b20724971f4583c1ec159edc32f155f46f73eedb5f92f48f3af9076e1eaca6142f1777b92084cad4181b49db98f8e0bd1a8e622136ff2fdcd6137f25bb778f7372556fb34027f9b874820e13a19317b14ec67201d927d77984cdceecd7258356cdff274059a08beacf77f4afc63234b30b9bf83daa8ede3e44e53d4dec586ab21bbd5281d1a220224d1cf963912d45447e039f4e6d4c45f0ad0c37f5fde20de"
+        },
+        "maxFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "maxPriorityFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0xc004"
+        },
+        "r": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "s": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "to": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0xac24299a91b72d1cb5b31147e3cf54964d896974"
+        },
+        "transactionIndex": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x0"
+        },
+        "type": {
+          "type": "string",
+          "example": "0x0"
+        },
+        "v": {
+          "type": "string",
+          "example": "0xe5"
+        },
+        "value": {
+          "type": "string",
+          "example": "0x0"
+        }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "amount": {
           "type": "string",
           "example": "1000000"
         },
-        "Index": {
+        "index": {
           "type": "string",
           "example": "1"
         },
-        "Validator": {
+        "validator": {
           "type": "string",
           "example": "12345"
         }
@@ -757,40 +942,6 @@ func init() {
     }
   },
   "definitions": {
-    "Block": {
-      "type": "object",
-      "properties": {
-        "Body": {
-          "$ref": "#/definitions/Body"
-        },
-        "Header": {
-          "$ref": "#/definitions/Header"
-        }
-      }
-    },
-    "Body": {
-      "type": "object",
-      "properties": {
-        "Transactions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Transaction"
-          }
-        },
-        "Uncles": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Header"
-          }
-        },
-        "Withdrawals": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Withdrawal"
-          }
-        }
-      }
-    },
     "Error": {
       "type": "object",
       "properties": {
@@ -825,7 +976,7 @@ func init() {
         },
         "result": {
           "type": "object",
-          "$ref": "#/definitions/Block"
+          "$ref": "#/definitions/block"
         }
       }
     },
@@ -845,7 +996,7 @@ func init() {
         },
         "result": {
           "type": "object",
-          "$ref": "#/definitions/Block"
+          "$ref": "#/definitions/block"
         }
       }
     },
@@ -906,93 +1057,8 @@ func init() {
         "result": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Block"
+            "$ref": "#/definitions/block"
           }
-        }
-      }
-    },
-    "Header": {
-      "type": "object",
-      "properties": {
-        "BaseFeePerGas": {
-          "type": "string",
-          "example": "1000000000"
-        },
-        "BlobGasUsed": {
-          "type": "string",
-          "example": "1000"
-        },
-        "Difficulty": {
-          "type": "string",
-          "example": "0x186a1"
-        },
-        "ExcessBlobGas": {
-          "type": "string",
-          "example": "500"
-        },
-        "ExtraData": {
-          "type": "string",
-          "example": "0x123456"
-        },
-        "GasLimit": {
-          "type": "string",
-          "example": "8000000"
-        },
-        "GasUsed": {
-          "type": "string",
-          "example": "21000"
-        },
-        "LogsBloom": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Miner": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef12345678"
-        },
-        "MixHash": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Nonce": {
-          "type": "string",
-          "example": "0x0000000000000042"
-        },
-        "Number": {
-          "type": "string",
-          "example": "100000"
-        },
-        "ParentBeaconBlockRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "ParentHash": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "ReceiptsRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Sha3Uncles": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "StateRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "Timestamp": {
-          "type": "string",
-          "example": "0x5f4e5f87"
-        },
-        "TransactionsRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "WithdrawalsRoot": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
         }
       }
     },
@@ -1041,43 +1107,347 @@ func init() {
         }
       }
     },
-    "Transaction": {
+    "accessList": {
       "type": "object",
       "properties": {
-        "from": {
+        "address": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "hash": {
-          "type": "string",
-          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-        },
-        "to": {
-          "type": "string",
-          "example": "0xabcdef1234567890abcdef1234567890abcdef12"
-        },
-        "value": {
-          "type": "string",
-          "example": "1000000000"
+        "storageKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
         }
       }
     },
-    "Withdrawal": {
+    "accessTuple": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "Amount": {
+        "storageKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
+        }
+      }
+    },
+    "block": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/transaction"
+          }
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "transaction": {
+      "type": "object",
+      "properties": {
+        "accessList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/accessTuple"
+          },
+          "x-nullable": true
+        },
+        "blockHash": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1d59179991e4b016d5fcf4aba59db622f064e654a82714e468c07f9f54efebd2"
+        },
+        "blockNumber": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x280468f"
+        },
+        "chainId": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x61"
+        },
+        "from": {
+          "type": "string",
+          "example": "0x5478b551e1c42e56417c44245f10b20e3b6347e8"
+        },
+        "gas": {
+          "type": "string",
+          "example": "0x7a1200"
+        },
+        "gasPrice": {
+          "type": "string",
+          "example": "0x12a05f200"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x5f5def5f5f9352d8a421c692bd51541c308b4a14c8044a2680cb6db811caf2d5"
+        },
+        "input": {
+          "type": "string",
+          "example": "0xb1dc65a400011eab462cabbd1f14fd9ab59a179156b71ed2c40dcab009bf2d870d27f157000000000000000000000000000000000000000000000000000000000067fd016d69030d5cb1244dc8531787cfc96f83b6d77c347e8796b1d1ca94a36a4c2f6a00000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000030000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000004b200000000000000000000000000000000000000000000000000000000000004b212e0e50632d2b5f1313dcf8c2c9b3044e7c7424bc94860d72f72174c2122bf618000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000067a474c11eb16492411f76cd717570c10d39a82cea3568e35a2f3b9d8655f55494e5576f4f3353b92361631f467db0bfae0fcf3fe199eef274da5bad572cedb3805fbf1ba1c001c2dcaa3a766bd2f928fe08e21dfd02715c94d615967be3e2a36c5021530db5c349bdfec118a6b3852701d540b18bb952b3905645e20bff695582e588e165d749f45965598e42181ffe0a9bbdad13d3ce057be0e5bacc2c61bfc4148087e4c0213d3ecfb2bbd9b9d65f7d3d3d980da0dc5f97080b961920c525100000000000000000000000000000000000000000000000000000000000000066ac29d0520e21a66d420d19f168bc5208ab5fbbbbc6809f03cc68fc0769f65d76b20724971f4583c1ec159edc32f155f46f73eedb5f92f48f3af9076e1eaca6142f1777b92084cad4181b49db98f8e0bd1a8e622136ff2fdcd6137f25bb778f7372556fb34027f9b874820e13a19317b14ec67201d927d77984cdceecd7258356cdff274059a08beacf77f4afc63234b30b9bf83daa8ede3e44e53d4dec586ab21bbd5281d1a220224d1cf963912d45447e039f4e6d4c45f0ad0c37f5fde20de"
+        },
+        "maxFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "maxPriorityFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0xc004"
+        },
+        "r": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "s": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "to": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0xac24299a91b72d1cb5b31147e3cf54964d896974"
+        },
+        "transactionIndex": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x0"
+        },
+        "type": {
+          "type": "string",
+          "example": "0x0"
+        },
+        "v": {
+          "type": "string",
+          "example": "0xe5"
+        },
+        "value": {
+          "type": "string",
+          "example": "0x0"
+        }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "amount": {
           "type": "string",
           "example": "1000000"
         },
-        "Index": {
+        "index": {
           "type": "string",
           "example": "1"
         },
-        "Validator": {
+        "validator": {
           "type": "string",
           "example": "12345"
         }

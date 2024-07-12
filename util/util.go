@@ -90,3 +90,12 @@ func IsHexHash(hash string) bool {
 	match, _ := regexp.MatchString(`^0x[0-9a-fA-F]{64}$`, hash)
 	return match
 }
+
+// Uint64ToHexPtr safely converts a *uint64 to a *string
+func Uint64ToHexPtr(u *uint64) *string {
+	if u == nil {
+		return nil
+	}
+	s := Uint64ToHex(*u)
+	return &s
+}

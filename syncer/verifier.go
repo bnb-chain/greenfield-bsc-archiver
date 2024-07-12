@@ -186,9 +186,30 @@ func (b *BlockIndexer) verifyBundleIntegrity(bundleName string, bundleStartBlock
 		if err != nil {
 			return err
 		}
-		if err = b.writeBlockToFile(bi, verifyBundleName, &types.Block{
-			Header: block.Header(),
-			Body:   block.Body(),
+		if err = b.writeBlockToFile(bi, verifyBundleName, &types.RealBlock{
+			ParentHash:       block.Header().ParentHash,
+			UncleHash:        block.Header().UncleHash,
+			Coinbase:         block.Header().Coinbase,
+			Root:             block.Header().Root,
+			TxHash:           block.Header().TxHash,
+			ReceiptHash:      block.Header().ReceiptHash,
+			Bloom:            block.Header().Bloom,
+			Difficulty:       block.Header().Difficulty,
+			Number:           block.Header().Number,
+			GasLimit:         block.Header().GasLimit,
+			GasUsed:          block.Header().GasUsed,
+			Time:             block.Header().Time,
+			Extra:            block.Header().Extra,
+			MixDigest:        block.Header().MixDigest,
+			Nonce:            block.Header().Nonce,
+			BaseFee:          block.Header().BaseFee,
+			WithdrawalsHash:  block.Header().WithdrawalsHash,
+			BlobGasUsed:      block.Header().BlobGasUsed,
+			ExcessBlobGas:    block.Header().ExcessBlobGas,
+			ParentBeaconRoot: block.Header().ParentBeaconRoot,
+			Transactions:     block.Body().Transactions,
+			Uncles:           block.Body().Uncles,
+			Withdrawals:      block.Body().Withdrawals,
 		}); err != nil {
 			return err
 		}
@@ -263,9 +284,30 @@ func (b *BlockIndexer) verifyBlobsAtBlock(blockID uint64, block *ethtypes.Block,
 		return err
 	}
 
-	blockInfo := &types.Block{
-		Header: block.Header(),
-		Body:   block.Body(),
+	blockInfo := &types.RealBlock{
+		ParentHash:       block.Header().ParentHash,
+		UncleHash:        block.Header().UncleHash,
+		Coinbase:         block.Header().Coinbase,
+		Root:             block.Header().Root,
+		TxHash:           block.Header().TxHash,
+		ReceiptHash:      block.Header().ReceiptHash,
+		Bloom:            block.Header().Bloom,
+		Difficulty:       block.Header().Difficulty,
+		Number:           block.Header().Number,
+		GasLimit:         block.Header().GasLimit,
+		GasUsed:          block.Header().GasUsed,
+		Time:             block.Header().Time,
+		Extra:            block.Header().Extra,
+		MixDigest:        block.Header().MixDigest,
+		Nonce:            block.Header().Nonce,
+		BaseFee:          block.Header().BaseFee,
+		WithdrawalsHash:  block.Header().WithdrawalsHash,
+		BlobGasUsed:      block.Header().BlobGasUsed,
+		ExcessBlobGas:    block.Header().ExcessBlobGas,
+		ParentBeaconRoot: block.Header().ParentBeaconRoot,
+		Transactions:     block.Body().Transactions,
+		Uncles:           block.Body().Uncles,
+		Withdrawals:      block.Body().Withdrawals,
 	}
 	blockJson, err := json.Marshal(blockInfo)
 	if err != nil {
@@ -321,9 +363,30 @@ func (b *BlockIndexer) reUploadBundle(bundleName string) error {
 			return err
 		}
 
-		if err = b.writeBlockToFile(bi, newBundleName, &types.Block{
-			Header: block.Header(),
-			Body:   block.Body(),
+		if err = b.writeBlockToFile(bi, newBundleName, &types.RealBlock{
+			ParentHash:       block.Header().ParentHash,
+			UncleHash:        block.Header().UncleHash,
+			Coinbase:         block.Header().Coinbase,
+			Root:             block.Header().Root,
+			TxHash:           block.Header().TxHash,
+			ReceiptHash:      block.Header().ReceiptHash,
+			Bloom:            block.Header().Bloom,
+			Difficulty:       block.Header().Difficulty,
+			Number:           block.Header().Number,
+			GasLimit:         block.Header().GasLimit,
+			GasUsed:          block.Header().GasUsed,
+			Time:             block.Header().Time,
+			Extra:            block.Header().Extra,
+			MixDigest:        block.Header().MixDigest,
+			Nonce:            block.Header().Nonce,
+			BaseFee:          block.Header().BaseFee,
+			WithdrawalsHash:  block.Header().WithdrawalsHash,
+			BlobGasUsed:      block.Header().BlobGasUsed,
+			ExcessBlobGas:    block.Header().ExcessBlobGas,
+			ParentBeaconRoot: block.Header().ParentBeaconRoot,
+			Transactions:     block.Body().Transactions,
+			Uncles:           block.Body().Uncles,
+			Withdrawals:      block.Body().Withdrawals,
 		}); err != nil {
 			return err
 		}

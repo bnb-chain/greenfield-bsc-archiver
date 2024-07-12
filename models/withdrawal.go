@@ -14,24 +14,24 @@ import (
 
 // Withdrawal withdrawal
 //
-// swagger:model Withdrawal
+// swagger:model withdrawal
 type Withdrawal struct {
 
 	// address
 	// Example: 0x1234567890abcdef1234567890abcdef12345678
-	Address string `json:"Address,omitempty"`
+	Address string `json:"address,omitempty"`
 
 	// amount
 	// Example: 1000000
-	Amount string `json:"Amount,omitempty"`
+	Amount string `json:"amount,omitempty"`
 
 	// index
 	// Example: 1
-	Index string `json:"Index,omitempty"`
+	Index string `json:"index,omitempty"`
 
 	// validator
 	// Example: 12345
-	Validator string `json:"Validator,omitempty"`
+	Validator string `json:"validator,omitempty"`
 }
 
 // Validate validates this withdrawal

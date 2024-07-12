@@ -1,7 +1,7 @@
 {
   "chain": "BSC",
   "bucket_name": "bsc-historical-blocks",
-  "start_block": 100000,
+  "start_block": 2000000,
   "enable_indiv_block_verification": true,
   "create_bundle_block_interval": 100,
   "bundle_not_sealed_reupload_threshold": 600,

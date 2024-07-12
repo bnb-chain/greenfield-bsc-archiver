@@ -49,8 +49,10 @@ func (b BlockService) GetBlockByBlockNumber(blockNumber uint64) (*models.Block, 
 	if err != nil {
 		return nil, err
 	}
-	var blockInfo *models.Block
-	err = json.Unmarshal([]byte(bundleObject), &blockInfo)
+
+	var bundleBlock *types.Block
+	err = json.Unmarshal([]byte(bundleObject), &bundleBlock)
+	blockInfo := types.BuildBlock(bundleBlock)
 	return blockInfo, err
 }
 

@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"gorm.io/gorm"
 
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"greeenfield-bsc-archiver/config"
 	"greeenfield-bsc-archiver/db"
 	"greeenfield-bsc-archiver/external"
@@ -147,9 +147,30 @@ func (b *BlockIndexer) sync() error {
 	}
 
 	// syncer only store block header & body
-	blockInfo := &types.Block{
-		Header: block.Header(),
-		Body:   block.Body(),
+	blockInfo := &types.RealBlock{
+		ParentHash:       block.Header().ParentHash,
+		UncleHash:        block.Header().UncleHash,
+		Coinbase:         block.Header().Coinbase,
+		Root:             block.Header().Root,
+		TxHash:           block.Header().TxHash,
+		ReceiptHash:      block.Header().ReceiptHash,
+		Bloom:            block.Header().Bloom,
+		Difficulty:       block.Header().Difficulty,
+		Number:           block.Header().Number,
+		GasLimit:         block.Header().GasLimit,
+		GasUsed:          block.Header().GasUsed,
+		Time:             block.Header().Time,
+		Extra:            block.Header().Extra,
+		MixDigest:        block.Header().MixDigest,
+		Nonce:            block.Header().Nonce,
+		BaseFee:          block.Header().BaseFee,
+		WithdrawalsHash:  block.Header().WithdrawalsHash,
+		BlobGasUsed:      block.Header().BlobGasUsed,
+		ExcessBlobGas:    block.Header().ExcessBlobGas,
+		ParentBeaconRoot: block.Header().ParentBeaconRoot,
+		Transactions:     block.Body().Transactions,
+		Uncles:           block.Body().Uncles,
+		Withdrawals:      block.Body().Withdrawals,
 	}
 
 	bundleName := b.bundleDetail.name
@@ -173,7 +194,7 @@ func (b *BlockIndexer) sync() error {
 	return nil
 }
 
-func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.Block) error {
+func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.RealBlock) error {
 	var err error
 	// create a new bundle in local.
 	if blockID == b.bundleDetail.startBlockID {
@@ -264,7 +285,7 @@ func (b *BlockIndexer) finalizeCurBundle(bundleName string) error {
 	return b.finalizeBundle(bundleName, b.getBundleDir(bundleName), b.getBundleFilePath(bundleName))
 }
 
-func (b *BlockIndexer) writeBlockToFile(blockNumber uint64, bundleName string, block *types.Block) error {
+func (b *BlockIndexer) writeBlockToFile(blockNumber uint64, bundleName string, block *types.RealBlock) error {
 	blockName := types.GetBlockName(blockNumber)
 	file, err := os.Create(b.getBlockPath(bundleName, blockName))
 	if err != nil {

@@ -17,7 +17,6 @@ import (
 )
 
 const (
-	ETH = "ETH"
 	BSC = "BSC"
 )
 
@@ -40,15 +39,12 @@ type SyncerConfig struct {
 }
 
 func (s *SyncerConfig) Validate() {
-	if !strings.EqualFold(s.Chain, ETH) && !strings.EqualFold(s.Chain, BSC) {
+	if !strings.EqualFold(s.Chain, BSC) {
 		panic("chain not support")
 	}
 	if len(s.BucketName) == 0 {
 		panic("the Greenfield bucket name is not is not provided")
 	}
-	//if s.StartBlock == 0 {
-	//	panic("the start block to sync slot is not provided")
-	//}
 	if len(s.BundleServiceEndpoints) == 0 {
 		panic("BundleService endpoints should not be empty")
 	}
@@ -95,7 +91,7 @@ type ServerConfig struct {
 }
 
 func (s *ServerConfig) Validate() {
-	if !strings.EqualFold(s.Chain, ETH) && !strings.EqualFold(s.Chain, BSC) {
+	if !strings.EqualFold(s.Chain, BSC) {
 		panic("chain not support")
 	}
 	if len(s.BucketName) == 0 {

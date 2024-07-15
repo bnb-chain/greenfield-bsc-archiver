@@ -87,6 +87,10 @@ type Block struct {
 	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
 	Sha3Uncles string `json:"sha3Uncles,omitempty"`
 
+	// size
+	// Example: 0x176d20b
+	Size string `json:"size,omitempty"`
+
 	// state root
 	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
 	StateRoot string `json:"stateRoot,omitempty"`
@@ -94,6 +98,10 @@ type Block struct {
 	// timestamp
 	// Example: 0x5f4e5f87
 	Timestamp string `json:"timestamp,omitempty"`
+
+	// total difficulty
+	// Example: 0x176d20b
+	TotalDifficulty *string `json:"totalDifficulty,omitempty"`
 
 	// transactions
 	Transactions []*Transaction `json:"transactions"`

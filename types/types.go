@@ -81,9 +81,13 @@ type Block struct {
 	Transactions     []*Transaction      `json:"transactions"`
 	Uncles           []*Header           `json:"uncles"`
 	Withdrawals      []*types.Withdrawal `json:"withdrawals"`
+
+	TotalDifficulty *big.Int `json:"totalDifficulty,omitempty"  gencodec:"required"`
+	Size            *big.Int `json:"size,omitempty"  gencodec:"required"`
 }
 
 type RealBlock struct {
+	Hash        common.Hash      `json:"hash"       gencodec:"required"`
 	ParentHash  common.Hash      `json:"parentHash"       gencodec:"required"`
 	UncleHash   common.Hash      `json:"sha3Uncles"       gencodec:"required"`
 	Coinbase    common.Address   `json:"miner"`
@@ -117,6 +121,9 @@ type RealBlock struct {
 	Transactions     []*types.Transaction `json:"transactions"`
 	Uncles           []*types.Header      `json:"uncles"`
 	Withdrawals      []*types.Withdrawal  `json:"withdrawals"`
+
+	TotalDifficulty *big.Int `json:"totalDifficulty,omitempty"  gencodec:"required"`
+	Size            *big.Int `json:"size,omitempty"  gencodec:"required"`
 }
 
 type Header struct {
@@ -379,21 +386,24 @@ func BuildBlock(bundleBlock *Block) *models.Block {
 		Transactions: txs,
 		Uncles:       uncles,
 		Withdrawals:  withdrawals,
+
+		Size: util.Uint64ToHex(bundleBlock.Size.Uint64()),
 	}
 	if bundleBlock.Difficulty != nil {
 		difficulty := util.Uint64ToHex(bundleBlock.Difficulty.Uint64())
 		blockInfo.Difficulty = &difficulty
-		//blockInfo.Difficulty = bundleBlock.Difficulty
 	}
 	if bundleBlock.Number != nil {
 		number := util.Uint64ToHex(bundleBlock.Number.Uint64())
 		blockInfo.Number = &number
-		//blockInfo.Number = bundleBlock.Number
 	}
 	if bundleBlock.BaseFee != nil {
 		baseFeePerGas := util.Uint64ToHex(bundleBlock.BaseFee.Uint64())
 		blockInfo.BaseFeePerGas = &baseFeePerGas
-		//blockInfo.BaseFeePerGas = bundleBlock.BaseFee
+	}
+	if bundleBlock.TotalDifficulty != nil {
+		totalDifficulty := util.Uint64ToHex(bundleBlock.TotalDifficulty.Uint64())
+		blockInfo.TotalDifficulty = &totalDifficulty
 	}
 	if bundleBlock.WithdrawalsHash != nil {
 		withdrawalsHash := bundleBlock.WithdrawalsHash.String()
@@ -412,4 +422,33 @@ func BuildBlock(bundleBlock *Block) *models.Block {
 		blockInfo.ParentBeaconBlockRoot = &parentBeaconRoot
 	}
 	return blockInfo
+}
+
+type RpcBlock struct {
+	Hash        common.Hash      `json:"hash"             gencodec:"required"`
+	ParentHash  common.Hash      `json:"parentHash"       gencodec:"required"`
+	UncleHash   common.Hash      `json:"sha3Uncles"       gencodec:"required"`
+	Coinbase    common.Address   `json:"miner"            gencodec:"required"`
+	Root        common.Hash      `json:"stateRoot"        gencodec:"required"`
+	TxHash      common.Hash      `json:"transactionsRoot" gencodec:"required"`
+	ReceiptHash common.Hash      `json:"receiptsRoot"     gencodec:"required"`
+	Bloom       types.Bloom      `json:"logsBloom"        gencodec:"required"`
+	Difficulty  hexutil.Big      `json:"difficulty"       gencodec:"required"`
+	Number      hexutil.Big      `json:"number"           gencodec:"required"`
+	GasLimit    hexutil.Uint64   `json:"gasLimit"         gencodec:"required"`
+	GasUsed     hexutil.Uint64   `json:"gasUsed"          gencodec:"required"`
+	Time        hexutil.Uint64   `json:"timestamp"        gencodec:"required"`
+	Extra       hexutil.Bytes    `json:"extraData"        gencodec:"required"`
+	MixDigest   common.Hash      `json:"mixHash"`
+	Nonce       types.BlockNonce `json:"nonce"`
+	Size        hexutil.Uint64   `json:"size"`
+
+	// belows are not belong to header
+	TotalDifficulty *hexutil.Big `json:"totalDifficulty,omitempty"  gencodec:"required"`
+
+	// BaseFee was added by EIP-1559 and is ignored in legacy headers.
+	BaseFee *hexutil.Big `json:"baseFeePerGas,omitempty"`
+
+	Txs    *[]common.Hash `json:"transactions,omitempty"`
+	Uncles *[]common.Hash `json:"uncles,omitempty"`
 }

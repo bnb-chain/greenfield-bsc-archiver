@@ -8,11 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"cosmossdk.io/math"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"gorm.io/gorm"
+	"greeenfield-bsc-archiver/util"
 
 	"greeenfield-bsc-archiver/config"
 	"greeenfield-bsc-archiver/db"
@@ -119,9 +121,13 @@ func (b *BlockIndexer) StartLoop() {
 
 func (b *BlockIndexer) sync() error {
 	var (
-		blockID uint64
-		err     error
-		block   *ethtypes.Block
+		blockID  uint64
+		err      error
+		err1     error
+		err2     error
+		block    *ethtypes.Block
+		rpcBlock *types.RpcBlock
+		wg       sync.WaitGroup
 	)
 	blockID, err = b.getNextBlockNum()
 	if err != nil {
@@ -141,9 +147,26 @@ func (b *BlockIndexer) sync() error {
 
 	ctx, cancel = context.WithTimeout(context.Background(), RPCTimeout)
 	defer cancel()
-	block, err = b.client.BlockByNumber(ctx, math.NewUint(blockID).BigInt())
-	if err != nil {
-		return err
+
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		block, err = b.client.BlockByNumber(ctx, math.NewUint(blockID).BigInt())
+	}()
+
+	go func() {
+		defer wg.Done()
+		rpcBlock, err = b.client.GetBlockByNumber(ctx, math.NewUint(blockID).BigInt())
+	}()
+
+	wg.Wait()
+
+	if err1 != nil {
+		return err1
+	}
+	if err2 != nil {
+		return err2
 	}
 
 	// syncer only store block header & body
@@ -171,6 +194,10 @@ func (b *BlockIndexer) sync() error {
 		Transactions:     block.Body().Transactions,
 		Uncles:           block.Body().Uncles,
 		Withdrawals:      block.Body().Withdrawals,
+
+		TotalDifficulty: util.HexutilBigToBigInt(rpcBlock.TotalDifficulty),
+		Size:            util.Uint64ToBigInt(rpcBlock.Size),
+		Hash:            block.Hash(),
 	}
 
 	bundleName := b.bundleDetail.name

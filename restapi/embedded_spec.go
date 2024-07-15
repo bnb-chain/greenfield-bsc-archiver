@@ -497,6 +497,10 @@ func init() {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
         },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
         "stateRoot": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
@@ -504,6 +508,11 @@ func init() {
         "timestamp": {
           "type": "string",
           "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
         },
         "transactions": {
           "type": "array",
@@ -1220,6 +1229,10 @@ func init() {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
         },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
         "stateRoot": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
@@ -1227,6 +1240,11 @@ func init() {
         "timestamp": {
           "type": "string",
           "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
         },
         "transactions": {
           "type": "array",

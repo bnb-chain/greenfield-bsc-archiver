@@ -5,17 +5,20 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"greeenfield-bsc-archiver/config"
+	types2 "greeenfield-bsc-archiver/types"
 )
 
 const BSCBlockConfirmNum = 3
 
 type IClient interface {
 	GetFinalizedBlockNum(ctx context.Context) (uint64, error)
-	BlockByNumber(ctx context.Context, int2 *big.Int) (*types.Block, error)
+	GetBlockByNumber(ctx context.Context, blockNumber *big.Int) (*types2.RpcBlock, error)
+	BlockByNumber(ctx context.Context, blockNumber *big.Int) (*types.Block, error)
 }
 
 type Client struct {
@@ -52,6 +55,17 @@ func (c *Client) GetFinalizedBlockNum(ctx context.Context) (uint64, error) {
 	return head.Number.Uint64(), nil
 }
 
-func (c *Client) BlockByNumber(ctx context.Context, int2 *big.Int) (*types.Block, error) {
-	return c.ethClient.BlockByNumber(ctx, int2)
+func (c *Client) BlockByNumber(ctx context.Context, blockNumber *big.Int) (*types.Block, error) {
+	return c.ethClient.BlockByNumber(ctx, blockNumber)
+}
+
+func (c *Client) GetBlockByNumber(ctx context.Context, blockNumber *big.Int) (*types2.RpcBlock, error) {
+	var block *types2.RpcBlock
+	if err := c.rpcClient.CallContext(ctx, &block, "eth_getBlockByNumber", hexutil.EncodeBig(blockNumber), false); err != nil {
+		return nil, err
+	}
+	if block == nil || block.TotalDifficulty == nil {
+		return nil, ethereum.NotFound
+	}
+	return block, nil
 }

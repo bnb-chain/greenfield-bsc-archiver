@@ -3,6 +3,7 @@ package util
 import (
 	"crypto/sha256"
 	"fmt"
+	"math/big"
 	"regexp"
 	"strconv"
 	"strings"
@@ -104,4 +105,15 @@ func Uint64ToHexPtr(u *uint64) *string {
 	}
 	s := Uint64ToHex(*u)
 	return &s
+}
+
+func HexutilBigToBigInt(hexBig *hexutil.Big) *big.Int {
+	if hexBig == nil {
+		return nil
+	}
+	return hexBig.ToInt()
+}
+
+func Uint64ToBigInt(u hexutil.Uint64) *big.Int {
+	return new(big.Int).SetUint64(uint64(u))
 }

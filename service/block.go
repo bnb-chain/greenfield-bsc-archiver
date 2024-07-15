@@ -52,7 +52,6 @@ func (b BlockService) GetBlockByBlockNumber(blockNumber uint64) (*models.Block, 
 
 	var bundleBlock *types.Block
 	err = json.Unmarshal([]byte(bundleObject), &bundleBlock)
-	bundleBlock.Hash = block.BlockHash
 	blockInfo := types.BuildBlock(bundleBlock)
 	return blockInfo, err
 }

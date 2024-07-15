@@ -166,6 +166,13 @@ definitions:
         type: string
         example: "0x186a1"
         x-nullable: true
+      totalDifficulty:
+        type: string
+        example: "0x176d20b"
+        x-nullable: true
+      size:
+        type: string
+        example: "0x176d20b"
       number:
         type: string
         example: "100000"

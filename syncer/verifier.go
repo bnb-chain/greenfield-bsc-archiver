@@ -107,11 +107,10 @@ func (b *BlockIndexer) verify() error {
 	// get block from BSC again
 	ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
 	defer cancel()
-
+	var rpcBlock *types.RpcBlock
 	rpcBlock, err = b.client.GetBlockByNumber(ctx, math.NewUint(verifyBlockID).BigInt())
 	if err != nil {
 		logging.Logger.Errorf("failed to get block at block_id=%d, err=%s", verifyBlockID, err.Error())
-		return err
 		return err
 	}
 

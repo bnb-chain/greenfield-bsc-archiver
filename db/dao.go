@@ -62,7 +62,7 @@ func (d *BlockSvcDB) GetBlockByRoot(root string) (*Block, error) {
 func (d *BlockSvcDB) GetLatestProcessedBlock() (*Block, error) {
 	block := Block{}
 	err := d.db.Model(Block{}).Order("block_number desc").Take(&block).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, err
 	}
 	return &block, nil

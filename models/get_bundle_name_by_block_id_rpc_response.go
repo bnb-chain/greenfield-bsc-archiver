@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// GetBundleStartBlockIDRPCResponse get bundle start block ID RPC response
+// GetBundleNameByBlockIDRPCResponse get bundle name by block ID RPC response
 //
-// swagger:model GetBundleStartBlockIDRPCResponse
-type GetBundleStartBlockIDRPCResponse struct {
+// swagger:model GetBundleNameByBlockIDRPCResponse
+type GetBundleNameByBlockIDRPCResponse struct {
 
 	// status code
 	// Example: 200
@@ -30,18 +30,18 @@ type GetBundleStartBlockIDRPCResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-// Validate validates this get bundle start block ID RPC response
-func (m *GetBundleStartBlockIDRPCResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this get bundle name by block ID RPC response
+func (m *GetBundleNameByBlockIDRPCResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this get bundle start block ID RPC response based on context it is used
-func (m *GetBundleStartBlockIDRPCResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this get bundle name by block ID RPC response based on context it is used
+func (m *GetBundleNameByBlockIDRPCResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *GetBundleStartBlockIDRPCResponse) MarshalBinary() ([]byte, error) {
+func (m *GetBundleNameByBlockIDRPCResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -49,8 +49,8 @@ func (m *GetBundleStartBlockIDRPCResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *GetBundleStartBlockIDRPCResponse) UnmarshalBinary(b []byte) error {
-	var res GetBundleStartBlockIDRPCResponse
+func (m *GetBundleNameByBlockIDRPCResponse) UnmarshalBinary(b []byte) error {
+	var res GetBundleNameByBlockIDRPCResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

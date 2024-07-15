@@ -1,7 +1,7 @@
 {
   "chain": "BSC",
-  "bucket_name": "bsc-historical-blocks",
-  "start_block": 40000000,
+  "bucket_name": "bsc-historical-blocks-test",
+  "start_block": 0,
   "enable_indiv_block_verification": true,
   "create_bundle_block_interval": 100,
   "bundle_not_sealed_reupload_threshold": 600,
@@ -14,6 +14,7 @@
   "rpc_addrs": [
     "https://bsc-mainnet.nodereal.io/v1/e52b23a60ebd4446811e455c9eb947ec"
   ],
+  "gnfd_rpc_addr": "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org",
   "temp_dir": "temp",
   "private_key": "a6f2041aeca9a09159c937b77316c9c7e2c0f1c5b7241832f84bf1d37eb49661",
   "db_config": {

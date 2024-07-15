@@ -53,8 +53,8 @@ func NewGreeenfieldBscArchiverAPI(spec *loads.Document) *GreeenfieldBscArchiverA
 		BlockGetBlockNumberHandler: block.GetBlockNumberHandlerFunc(func(params block.GetBlockNumberParams) middleware.Responder {
 			return middleware.NotImplemented("operation block.GetBlockNumber has not yet been implemented")
 		}),
-		BlockGetBundleStartBlockIDHandler: block.GetBundleStartBlockIDHandlerFunc(func(params block.GetBundleStartBlockIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation block.GetBundleStartBlockID has not yet been implemented")
+		BlockGetBundleNameByBlockIDHandler: block.GetBundleNameByBlockIDHandlerFunc(func(params block.GetBundleNameByBlockIDParams) middleware.Responder {
+			return middleware.NotImplemented("operation block.GetBundleNameByBlockID has not yet been implemented")
 		}),
 		BlockGetBundledBlockByNumberHandler: block.GetBundledBlockByNumberHandlerFunc(func(params block.GetBundledBlockByNumberParams) middleware.Responder {
 			return middleware.NotImplemented("operation block.GetBundledBlockByNumber has not yet been implemented")
@@ -101,8 +101,8 @@ type GreeenfieldBscArchiverAPI struct {
 	BlockGetBlockByNumberHandler block.GetBlockByNumberHandler
 	// BlockGetBlockNumberHandler sets the operation handler for the get block number operation
 	BlockGetBlockNumberHandler block.GetBlockNumberHandler
-	// BlockGetBundleStartBlockIDHandler sets the operation handler for the get bundle start block ID operation
-	BlockGetBundleStartBlockIDHandler block.GetBundleStartBlockIDHandler
+	// BlockGetBundleNameByBlockIDHandler sets the operation handler for the get bundle name by block ID operation
+	BlockGetBundleNameByBlockIDHandler block.GetBundleNameByBlockIDHandler
 	// BlockGetBundledBlockByNumberHandler sets the operation handler for the get bundled block by number operation
 	BlockGetBundledBlockByNumberHandler block.GetBundledBlockByNumberHandler
 
@@ -191,8 +191,8 @@ func (o *GreeenfieldBscArchiverAPI) Validate() error {
 	if o.BlockGetBlockNumberHandler == nil {
 		unregistered = append(unregistered, "block.GetBlockNumberHandler")
 	}
-	if o.BlockGetBundleStartBlockIDHandler == nil {
-		unregistered = append(unregistered, "block.GetBundleStartBlockIDHandler")
+	if o.BlockGetBundleNameByBlockIDHandler == nil {
+		unregistered = append(unregistered, "block.GetBundleNameByBlockIDHandler")
 	}
 	if o.BlockGetBundledBlockByNumberHandler == nil {
 		unregistered = append(unregistered, "block.GetBundledBlockByNumberHandler")
@@ -300,7 +300,7 @@ func (o *GreeenfieldBscArchiverAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/bsc/v1/blocks/{block_id}/bundle/start"] = block.NewGetBundleStartBlockID(o.context, o.BlockGetBundleStartBlockIDHandler)
+	o.handlers["GET"]["/bsc/v1/blocks/{block_id}/bundle/name"] = block.NewGetBundleNameByBlockID(o.context, o.BlockGetBundleNameByBlockIDHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

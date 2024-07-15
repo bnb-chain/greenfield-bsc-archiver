@@ -65,7 +65,7 @@ func init() {
         }
       }
     },
-    "/bsc/v1/blocks/{block_id}/bundle/start": {
+    "/bsc/v1/blocks/{block_id}/bundle/name": {
       "get": {
         "produces": [
           "application/json"
@@ -73,8 +73,8 @@ func init() {
         "tags": [
           "block"
         ],
-        "summary": "Get start block id of this bundle",
-        "operationId": "getBundleStartBlockID",
+        "summary": "Get bundle name by block id",
+        "operationId": "getBundleNameByBlockID",
         "parameters": [
           {
             "minLength": 1,
@@ -89,7 +89,7 @@ func init() {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/GetBundleStartBlockIDRPCResponse"
+              "$ref": "#/definitions/GetBundleNameByBlockIDRPCResponse"
             }
           },
           "400": {
@@ -301,7 +301,7 @@ func init() {
         }
       }
     },
-    "GetBundleStartBlockIDRPCResponse": {
+    "GetBundleNameByBlockIDRPCResponse": {
       "type": "object",
       "properties": {
         "code": {
@@ -797,7 +797,7 @@ func init() {
         }
       }
     },
-    "/bsc/v1/blocks/{block_id}/bundle/start": {
+    "/bsc/v1/blocks/{block_id}/bundle/name": {
       "get": {
         "produces": [
           "application/json"
@@ -805,8 +805,8 @@ func init() {
         "tags": [
           "block"
         ],
-        "summary": "Get start block id of this bundle",
-        "operationId": "getBundleStartBlockID",
+        "summary": "Get bundle name by block id",
+        "operationId": "getBundleNameByBlockID",
         "parameters": [
           {
             "minLength": 1,
@@ -821,7 +821,7 @@ func init() {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/GetBundleStartBlockIDRPCResponse"
+              "$ref": "#/definitions/GetBundleNameByBlockIDRPCResponse"
             }
           },
           "400": {
@@ -1033,7 +1033,7 @@ func init() {
         }
       }
     },
-    "GetBundleStartBlockIDRPCResponse": {
+    "GetBundleNameByBlockIDRPCResponse": {
       "type": "object",
       "properties": {
         "code": {

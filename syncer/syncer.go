@@ -208,8 +208,12 @@ func (b *BlockIndexer) getCreateBundleInterval() uint64 {
 func (b *BlockIndexer) getNextBlockNum() (uint64, error) {
 	latestProcessedBlock, err := b.blockDao.GetLatestProcessedBlock()
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return 0, nil
+		}
 		return 0, fmt.Errorf("failed to get latest polled block from db, error: %s", err.Error())
 	}
+
 	latestPolledBlockNumber := latestProcessedBlock.BlockNumber
 	nextBlockID := b.config.StartBlock
 	if nextBlockID <= latestPolledBlockNumber {

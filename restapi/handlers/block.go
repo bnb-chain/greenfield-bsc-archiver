@@ -45,22 +45,22 @@ func HandleGetBundledBlockByNumber() func(params block.GetBundledBlockByNumberPa
 	}
 }
 
-func HandleGetBundleStartBlockID() func(params block.GetBundleStartBlockIDParams) middleware.Responder {
-	return func(params block.GetBundleStartBlockIDParams) middleware.Responder {
+func HandleGetBundleNameByBlockID() func(params block.GetBundleNameByBlockIDParams) middleware.Responder {
+	return func(params block.GetBundleNameByBlockIDParams) middleware.Responder {
 		blockID := params.BlockID
 		blockNum, err := util.HexToUint64(blockID)
 		if err != nil {
-			return block.NewGetBundleStartBlockIDBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("invalid block id")))
+			return block.NewGetBundleNameByBlockIDBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("invalid block id")))
 		}
 		name, err := service.BlockSvc.GetBundleNameByBlockID(blockNum)
 		if err != nil {
-			return block.NewGetBundleStartBlockIDInternalServerError().WithPayload(service.InternalErrorWithError(err))
+			return block.NewGetBundleNameByBlockIDInternalServerError().WithPayload(service.InternalErrorWithError(err))
 		}
 
-		response := &models.GetBundleStartBlockIDRPCResponse{
+		response := &models.GetBundleNameByBlockIDRPCResponse{
 			Data: name,
 		}
-		return block.NewGetBundleStartBlockIDOK().WithPayload(response)
+		return block.NewGetBundleNameByBlockIDOK().WithPayload(response)
 	}
 }
 

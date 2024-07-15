@@ -101,12 +101,12 @@ paths:
           description: 'internal server error'
           schema:
             $ref: "#/definitions/Error"
-  /bsc/v1/blocks/{block_id}/bundle/start:
+  /bsc/v1/blocks/{block_id}/bundle/name:
     get:
       tags:
         - "block"
-      summary: "Get start block id of this bundle"
-      operationId: "getBundleStartBlockID"
+      summary: "Get bundle name by block id"
+      operationId: "getBundleNameByBlockID"
       produces:
         - "application/json"
       parameters:
@@ -120,7 +120,7 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/GetBundleStartBlockIDRPCResponse"
+            $ref: "#/definitions/GetBundleNameByBlockIDRPCResponse"
         "400":
           description: 'Bad Request'
           schema:
@@ -482,7 +482,7 @@ definitions:
         example: 1
       error:
         $ref: "#/definitions/RPCError"
-  GetBundleStartBlockIDRPCResponse:
+  GetBundleNameByBlockIDRPCResponse:
     type: object
     properties:
       code:

@@ -158,7 +158,7 @@ func (b *BlockIndexer) verifyBundleIntegrity(bundleName string, bundleStartBlock
 	defer os.RemoveAll(b.getBundleDir(verifyBundleName))
 
 	for bi := bundleStartBlockID; bi <= bundleEndBlockID; bi++ {
-		logging.Logger.Infof("start to get blob from block_id=%d", bi)
+		logging.Logger.Infof("start to get block from block_id=%d", bi)
 		ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
 		defer cancel()
 		var block *types.RpcBlock

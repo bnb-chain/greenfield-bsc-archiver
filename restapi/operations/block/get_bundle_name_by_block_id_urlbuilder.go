@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-// GetBundleStartBlockIDURL generates an URL for the get bundle start block ID operation
-type GetBundleStartBlockIDURL struct {
+// GetBundleNameByBlockIDURL generates an URL for the get bundle name by block ID operation
+type GetBundleNameByBlockIDURL struct {
 	BlockID string
 
 	_basePath string
@@ -24,7 +24,7 @@ type GetBundleStartBlockIDURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetBundleStartBlockIDURL) WithBasePath(bp string) *GetBundleStartBlockIDURL {
+func (o *GetBundleNameByBlockIDURL) WithBasePath(bp string) *GetBundleNameByBlockIDURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -32,21 +32,21 @@ func (o *GetBundleStartBlockIDURL) WithBasePath(bp string) *GetBundleStartBlockI
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetBundleStartBlockIDURL) SetBasePath(bp string) {
+func (o *GetBundleNameByBlockIDURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *GetBundleStartBlockIDURL) Build() (*url.URL, error) {
+func (o *GetBundleNameByBlockIDURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/bsc/v1/blocks/{block_id}/bundle/start"
+	var _path = "/bsc/v1/blocks/{block_id}/bundle/name"
 
 	blockID := o.BlockID
 	if blockID != "" {
 		_path = strings.Replace(_path, "{block_id}", blockID, -1)
 	} else {
-		return nil, errors.New("blockId is required on GetBundleStartBlockIDURL")
+		return nil, errors.New("blockId is required on GetBundleNameByBlockIDURL")
 	}
 
 	_basePath := o._basePath
@@ -56,7 +56,7 @@ func (o *GetBundleStartBlockIDURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *GetBundleStartBlockIDURL) Must(u *url.URL, err error) *url.URL {
+func (o *GetBundleNameByBlockIDURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -67,17 +67,17 @@ func (o *GetBundleStartBlockIDURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *GetBundleStartBlockIDURL) String() string {
+func (o *GetBundleNameByBlockIDURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *GetBundleStartBlockIDURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *GetBundleNameByBlockIDURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on GetBundleStartBlockIDURL")
+		return nil, errors.New("scheme is required for a full url on GetBundleNameByBlockIDURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on GetBundleStartBlockIDURL")
+		return nil, errors.New("host is required for a full url on GetBundleNameByBlockIDURL")
 	}
 
 	base, err := o.Build()
@@ -91,6 +91,6 @@ func (o *GetBundleStartBlockIDURL) BuildFull(scheme, host string) (*url.URL, err
 }
 
 // StringFull returns the string representation of a complete url
-func (o *GetBundleStartBlockIDURL) StringFull(scheme, host string) string {
+func (o *GetBundleNameByBlockIDURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }

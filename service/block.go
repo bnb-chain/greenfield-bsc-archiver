@@ -50,7 +50,7 @@ func (b BlockService) GetBlockByBlockNumber(blockNumber uint64) (*models.Block, 
 		return nil, err
 	}
 
-	var bundleBlock *types.Block
+	var bundleBlock *types.RpcBlock
 	err = json.Unmarshal([]byte(bundleObject), &bundleBlock)
 	blockInfo := types.BuildBlock(bundleBlock)
 	return blockInfo, err

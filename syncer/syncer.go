@@ -8,14 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
 	"cosmossdk.io/math"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"gorm.io/gorm"
-	"greeenfield-bsc-archiver/util"
-
 	"greeenfield-bsc-archiver/config"
 	"greeenfield-bsc-archiver/db"
 	"greeenfield-bsc-archiver/external"
@@ -123,11 +119,7 @@ func (b *BlockIndexer) sync() error {
 	var (
 		blockID  uint64
 		err      error
-		err1     error
-		err2     error
-		block    *ethtypes.Block
 		rpcBlock *types.RpcBlock
-		wg       sync.WaitGroup
 	)
 	blockID, err = b.getNextBlockNum()
 	if err != nil {
@@ -148,65 +140,18 @@ func (b *BlockIndexer) sync() error {
 	ctx, cancel = context.WithTimeout(context.Background(), RPCTimeout)
 	defer cancel()
 
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		block, err = b.client.BlockByNumber(ctx, math.NewUint(blockID).BigInt())
-	}()
-
-	go func() {
-		defer wg.Done()
-		rpcBlock, err = b.client.GetBlockByNumber(ctx, math.NewUint(blockID).BigInt())
-	}()
-
-	wg.Wait()
-
-	if err1 != nil {
-		return err1
-	}
-	if err2 != nil {
-		return err2
-	}
-
-	// syncer only store block header & body
-	blockInfo := &types.RealBlock{
-		ParentHash:       block.Header().ParentHash,
-		UncleHash:        block.Header().UncleHash,
-		Coinbase:         block.Header().Coinbase,
-		Root:             block.Header().Root,
-		TxHash:           block.Header().TxHash,
-		ReceiptHash:      block.Header().ReceiptHash,
-		Bloom:            block.Header().Bloom,
-		Difficulty:       block.Header().Difficulty,
-		Number:           block.Header().Number,
-		GasLimit:         block.Header().GasLimit,
-		GasUsed:          block.Header().GasUsed,
-		Time:             block.Header().Time,
-		Extra:            block.Header().Extra,
-		MixDigest:        block.Header().MixDigest,
-		Nonce:            block.Header().Nonce,
-		BaseFee:          block.Header().BaseFee,
-		WithdrawalsHash:  block.Header().WithdrawalsHash,
-		BlobGasUsed:      block.Header().BlobGasUsed,
-		ExcessBlobGas:    block.Header().ExcessBlobGas,
-		ParentBeaconRoot: block.Header().ParentBeaconRoot,
-		Transactions:     block.Body().Transactions,
-		Uncles:           block.Body().Uncles,
-		Withdrawals:      block.Body().Withdrawals,
-
-		TotalDifficulty: util.HexutilBigToBigInt(rpcBlock.TotalDifficulty),
-		Size:            util.Uint64ToBigInt(rpcBlock.Size),
-		Hash:            block.Hash(),
-	}
-
-	bundleName := b.bundleDetail.name
-	err = b.process(bundleName, blockID, blockInfo)
+	rpcBlock, err = b.client.GetBlockByNumber(ctx, math.NewUint(blockID).BigInt())
 	if err != nil {
 		return err
 	}
 
-	blockToSave, err := b.toBlock(block, blockID, bundleName)
+	bundleName := b.bundleDetail.name
+	err = b.process(bundleName, blockID, rpcBlock)
+	if err != nil {
+		return err
+	}
+
+	blockToSave, err := b.toBlock(rpcBlock, blockID, bundleName)
 	if err != nil {
 		return err
 	}
@@ -221,7 +166,7 @@ func (b *BlockIndexer) sync() error {
 	return nil
 }
 
-func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.RealBlock) error {
+func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.RpcBlock) error {
 	var err error
 	// create a new bundle in local.
 	if blockID == b.bundleDetail.startBlockID {
@@ -312,7 +257,7 @@ func (b *BlockIndexer) finalizeCurBundle(bundleName string) error {
 	return b.finalizeBundle(bundleName, b.getBundleDir(bundleName), b.getBundleFilePath(bundleName))
 }
 
-func (b *BlockIndexer) writeBlockToFile(blockNumber uint64, bundleName string, block *types.RealBlock) error {
+func (b *BlockIndexer) writeBlockToFile(blockNumber uint64, bundleName string, block *types.RpcBlock) error {
 	blockName := types.GetBlockName(blockNumber)
 	file, err := os.Create(b.getBlockPath(bundleName, blockName))
 	if err != nil {
@@ -393,9 +338,9 @@ func (b *BlockIndexer) LoadProgressAndResume(nextBlockID uint64) error {
 	return nil
 }
 
-func (b *BlockIndexer) toBlock(block *ethtypes.Block, blockNumber uint64, bundleName string) (*db.Block, error) {
+func (b *BlockIndexer) toBlock(block *types.RpcBlock, blockNumber uint64, bundleName string) (*db.Block, error) {
 	blockReturn := &db.Block{
-		BlockHash:   block.Hash(),
+		BlockHash:   block.Hash,
 		BlockNumber: blockNumber,
 		BundleName:  bundleName,
 	}

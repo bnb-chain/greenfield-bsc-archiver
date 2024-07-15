@@ -61,7 +61,7 @@ func (c *Client) BlockByNumber(ctx context.Context, blockNumber *big.Int) (*type
 
 func (c *Client) GetBlockByNumber(ctx context.Context, blockNumber *big.Int) (*types2.RpcBlock, error) {
 	var block *types2.RpcBlock
-	if err := c.rpcClient.CallContext(ctx, &block, "eth_getBlockByNumber", hexutil.EncodeBig(blockNumber), false); err != nil {
+	if err := c.rpcClient.CallContext(ctx, &block, "eth_getBlockByNumber", hexutil.EncodeBig(blockNumber), true); err != nil {
 		return nil, err
 	}
 	if block == nil || block.TotalDifficulty == nil {

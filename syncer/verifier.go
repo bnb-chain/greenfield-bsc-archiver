@@ -181,39 +181,43 @@ func (b *BlockIndexer) verifyBundleIntegrity(bundleName string, bundleStartBlock
 		logging.Logger.Infof("start to get blob from block_id=%d", bi)
 		ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
 		defer cancel()
-		var block *ethtypes.Block
-		block, err = b.client.BlockByNumber(ctx, math.NewUint(bi).BigInt())
+		var block *types.RpcBlock
+		block, err = b.client.GetBlockByNumber(ctx, math.NewUint(bi).BigInt())
 		if err != nil {
 			return err
 		}
-		if err = b.writeBlockToFile(bi, verifyBundleName, &types.RealBlock{
-			ParentHash:       block.Header().ParentHash,
-			UncleHash:        block.Header().UncleHash,
-			Coinbase:         block.Header().Coinbase,
-			Root:             block.Header().Root,
-			TxHash:           block.Header().TxHash,
-			ReceiptHash:      block.Header().ReceiptHash,
-			Bloom:            block.Header().Bloom,
-			Difficulty:       block.Header().Difficulty,
-			Number:           block.Header().Number,
-			GasLimit:         block.Header().GasLimit,
-			GasUsed:          block.Header().GasUsed,
-			Time:             block.Header().Time,
-			Extra:            block.Header().Extra,
-			MixDigest:        block.Header().MixDigest,
-			Nonce:            block.Header().Nonce,
-			BaseFee:          block.Header().BaseFee,
-			WithdrawalsHash:  block.Header().WithdrawalsHash,
-			BlobGasUsed:      block.Header().BlobGasUsed,
-			ExcessBlobGas:    block.Header().ExcessBlobGas,
-			ParentBeaconRoot: block.Header().ParentBeaconRoot,
-			Transactions:     block.Body().Transactions,
-			Uncles:           block.Body().Uncles,
-			Withdrawals:      block.Body().Withdrawals,
-		}); err != nil {
+		if err = b.writeBlockToFile(bi, verifyBundleName, block); err != nil {
 			return err
 		}
 	}
+	//	if err = b.writeBlockToFile(bi, verifyBundleName, &types.RealBlock{
+	//		ParentHash:       block.Header().ParentHash,
+	//		UncleHash:        block.Header().UncleHash,
+	//		Coinbase:         block.Header().Coinbase,
+	//		Root:             block.Header().Root,
+	//		TxHash:           block.Header().TxHash,
+	//		ReceiptHash:      block.Header().ReceiptHash,
+	//		Bloom:            block.Header().Bloom,
+	//		Difficulty:       block.Header().Difficulty,
+	//		Number:           block.Header().Number,
+	//		GasLimit:         block.Header().GasLimit,
+	//		GasUsed:          block.Header().GasUsed,
+	//		Time:             block.Header().Time,
+	//		Extra:            block.Header().Extra,
+	//		MixDigest:        block.Header().MixDigest,
+	//		Nonce:            block.Header().Nonce,
+	//		BaseFee:          block.Header().BaseFee,
+	//		WithdrawalsHash:  block.Header().WithdrawalsHash,
+	//		BlobGasUsed:      block.Header().BlobGasUsed,
+	//		ExcessBlobGas:    block.Header().ExcessBlobGas,
+	//		ParentBeaconRoot: block.Header().ParentBeaconRoot,
+	//		Transactions:     block.Body().Transactions,
+	//		Uncles:           block.Body().Uncles,
+	//		Withdrawals:      block.Body().Withdrawals,
+	//	}); err != nil {
+	//		return err
+	//	}
+	//}
 	bundleObject, _, err := cmn.BundleObjectFromDirectory(b.getBundleDir(verifyBundleName))
 	if err != nil {
 		return err
@@ -357,37 +361,13 @@ func (b *BlockIndexer) reUploadBundle(bundleName string) error {
 		ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
 		defer cancel()
 
-		var block *ethtypes.Block
-		block, err = b.client.BlockByNumber(ctx, math.NewUint(bi).BigInt())
+		var block *types.RpcBlock
+		block, err = b.client.GetBlockByNumber(ctx, math.NewUint(bi).BigInt())
 		if err != nil {
 			return err
 		}
 
-		if err = b.writeBlockToFile(bi, newBundleName, &types.RealBlock{
-			ParentHash:       block.Header().ParentHash,
-			UncleHash:        block.Header().UncleHash,
-			Coinbase:         block.Header().Coinbase,
-			Root:             block.Header().Root,
-			TxHash:           block.Header().TxHash,
-			ReceiptHash:      block.Header().ReceiptHash,
-			Bloom:            block.Header().Bloom,
-			Difficulty:       block.Header().Difficulty,
-			Number:           block.Header().Number,
-			GasLimit:         block.Header().GasLimit,
-			GasUsed:          block.Header().GasUsed,
-			Time:             block.Header().Time,
-			Extra:            block.Header().Extra,
-			MixDigest:        block.Header().MixDigest,
-			Nonce:            block.Header().Nonce,
-			BaseFee:          block.Header().BaseFee,
-			WithdrawalsHash:  block.Header().WithdrawalsHash,
-			BlobGasUsed:      block.Header().BlobGasUsed,
-			ExcessBlobGas:    block.Header().ExcessBlobGas,
-			ParentBeaconRoot: block.Header().ParentBeaconRoot,
-			Transactions:     block.Body().Transactions,
-			Uncles:           block.Body().Uncles,
-			Withdrawals:      block.Body().Withdrawals,
-		}); err != nil {
+		if err = b.writeBlockToFile(bi, newBundleName, block); err != nil {
 			return err
 		}
 

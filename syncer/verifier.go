@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"gorm.io/gorm"
 
 	"greeenfield-bsc-archiver/db"
@@ -105,27 +104,14 @@ func (b *BlockIndexer) verify() error {
 		return nil
 	}
 
-	//if verifyBlock.BlobCount == 0 {
-	//	if err = s.blockDao.UpdateBlockStatus(verifyBlockID, db.Verified); err != nil {
-	//		logging.Logger.Errorf("failed to update block status, block_id=%d err=%s", verifyBlockID, err.Error())
-	//		return err
-	//	}
-	//	if verifyBlockID == bundleEndBlockID {
-	//		logging.Logger.Debugf("update bundle status to sealed, name=%s , block_id %d ", bundleName, verifyBlockID)
-	//		if err = s.blockDao.UpdateBundleStatus(bundleName, db.Sealed); err != nil {
-	//			logging.Logger.Errorf("failed to update bundle status to sealed, name=%s , block_id %d ", bundleName, verifyBlockID)
-	//			return err
-	//		}
-	//	}
-	//	return nil
-	//}
-
 	// get block from BSC again
 	ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
 	defer cancel()
-	block, err := b.client.BlockByNumber(ctx, math.NewUint(verifyBlockID).BigInt())
+
+	rpcBlock, err = b.client.GetBlockByNumber(ctx, math.NewUint(verifyBlockID).BigInt())
 	if err != nil {
-		logging.Logger.Errorf("failed to get blob at block_id=%d, err=%s", verifyBlockID, err.Error())
+		logging.Logger.Errorf("failed to get block at block_id=%d, err=%s", verifyBlockID, err.Error())
+		return err
 		return err
 	}
 
@@ -135,12 +121,7 @@ func (b *BlockIndexer) verify() error {
 		return err
 	}
 
-	//if len(blockMetas) != len(block) {
-	//	logging.Logger.Errorf("found blob number mismatch at block_id=%d, bundleName=%s, expected=%d, actual=%d", verifyBlockID, bundleName, len(sideCars), len(blobMetas))
-	//	return s.reUploadBundle(bundleName)
-	//}
-
-	err = b.verifyBlobsAtBlock(verifyBlockID, block, blockMetas, bundleName)
+	err = b.verifyBlobsAtBlock(verifyBlockID, rpcBlock, blockMetas, bundleName)
 	if err != nil {
 		if errors.Is(err, ErrVerificationFailed) {
 			return b.reUploadBundle(bundleName)
@@ -190,34 +171,7 @@ func (b *BlockIndexer) verifyBundleIntegrity(bundleName string, bundleStartBlock
 			return err
 		}
 	}
-	//	if err = b.writeBlockToFile(bi, verifyBundleName, &types.RealBlock{
-	//		ParentHash:       block.Header().ParentHash,
-	//		UncleHash:        block.Header().UncleHash,
-	//		Coinbase:         block.Header().Coinbase,
-	//		Root:             block.Header().Root,
-	//		TxHash:           block.Header().TxHash,
-	//		ReceiptHash:      block.Header().ReceiptHash,
-	//		Bloom:            block.Header().Bloom,
-	//		Difficulty:       block.Header().Difficulty,
-	//		Number:           block.Header().Number,
-	//		GasLimit:         block.Header().GasLimit,
-	//		GasUsed:          block.Header().GasUsed,
-	//		Time:             block.Header().Time,
-	//		Extra:            block.Header().Extra,
-	//		MixDigest:        block.Header().MixDigest,
-	//		Nonce:            block.Header().Nonce,
-	//		BaseFee:          block.Header().BaseFee,
-	//		WithdrawalsHash:  block.Header().WithdrawalsHash,
-	//		BlobGasUsed:      block.Header().BlobGasUsed,
-	//		ExcessBlobGas:    block.Header().ExcessBlobGas,
-	//		ParentBeaconRoot: block.Header().ParentBeaconRoot,
-	//		Transactions:     block.Body().Transactions,
-	//		Uncles:           block.Body().Uncles,
-	//		Withdrawals:      block.Body().Withdrawals,
-	//	}); err != nil {
-	//		return err
-	//	}
-	//}
+
 	bundleObject, _, err := cmn.BundleObjectFromDirectory(b.getBundleDir(verifyBundleName))
 	if err != nil {
 		return err
@@ -267,7 +221,7 @@ func (b *BlockIndexer) verifyBundleIntegrity(bundleName string, bundleStartBlock
 	return nil
 }
 
-func (b *BlockIndexer) verifyBlobsAtBlock(blockID uint64, block *ethtypes.Block, blockMetas *db.Block, bundleName string) error {
+func (b *BlockIndexer) verifyBlobsAtBlock(blockID uint64, block *types.RpcBlock, blockMetas *db.Block, bundleName string) error {
 	// get block from bundle service
 	blockFromBundle, err := b.bundleClient.GetObject(b.getBucketName(), bundleName, types.GetBlockName(blockID))
 	if err != nil {
@@ -278,7 +232,7 @@ func (b *BlockIndexer) verifyBlobsAtBlock(blockID uint64, block *ethtypes.Block,
 		return err
 	}
 
-	if block.Hash() != blockMetas.BlockHash {
+	if block.Hash != blockMetas.BlockHash {
 		logging.Logger.Errorf("found db block mismatch")
 		return ErrVerificationFailed
 	}
@@ -288,32 +242,7 @@ func (b *BlockIndexer) verifyBlobsAtBlock(blockID uint64, block *ethtypes.Block,
 		return err
 	}
 
-	blockInfo := &types.RealBlock{
-		ParentHash:       block.Header().ParentHash,
-		UncleHash:        block.Header().UncleHash,
-		Coinbase:         block.Header().Coinbase,
-		Root:             block.Header().Root,
-		TxHash:           block.Header().TxHash,
-		ReceiptHash:      block.Header().ReceiptHash,
-		Bloom:            block.Header().Bloom,
-		Difficulty:       block.Header().Difficulty,
-		Number:           block.Header().Number,
-		GasLimit:         block.Header().GasLimit,
-		GasUsed:          block.Header().GasUsed,
-		Time:             block.Header().Time,
-		Extra:            block.Header().Extra,
-		MixDigest:        block.Header().MixDigest,
-		Nonce:            block.Header().Nonce,
-		BaseFee:          block.Header().BaseFee,
-		WithdrawalsHash:  block.Header().WithdrawalsHash,
-		BlobGasUsed:      block.Header().BlobGasUsed,
-		ExcessBlobGas:    block.Header().ExcessBlobGas,
-		ParentBeaconRoot: block.Header().ParentBeaconRoot,
-		Transactions:     block.Body().Transactions,
-		Uncles:           block.Body().Uncles,
-		Withdrawals:      block.Body().Withdrawals,
-	}
-	blockJson, err := json.Marshal(blockInfo)
+	blockJson, err := json.Marshal(block)
 	if err != nil {
 		logging.Logger.Errorf("failed to marshal block to JSON", "err", err.Error())
 		return err

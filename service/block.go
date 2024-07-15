@@ -18,7 +18,7 @@ type Block interface {
 	GetBundledBlockByBlockNumber(blockNumber uint64) ([]*models.Block, error)
 	GetBlockByBlockHash(blockHash common.Hash) (*models.Block, error)
 	GetLatestBlockNumber() (uint64, error)
-	GetBundleStartBlockID(blockNumber uint64) (uint64, error)
+	GetBundleNameByBlockID(blockNumber uint64) (string, error)
 }
 
 type BlockService struct {
@@ -52,6 +52,7 @@ func (b BlockService) GetBlockByBlockNumber(blockNumber uint64) (*models.Block, 
 
 	var bundleBlock *types.Block
 	err = json.Unmarshal([]byte(bundleObject), &bundleBlock)
+	bundleBlock.Hash = block.BlockHash
 	blockInfo := types.BuildBlock(bundleBlock)
 	return blockInfo, err
 }
@@ -88,14 +89,11 @@ func (b BlockService) GetLatestBlockNumber() (uint64, error) {
 	return block.BlockNumber, err
 }
 
-func (b BlockService) GetBundleStartBlockID(blockNumber uint64) (uint64, error) {
+func (b BlockService) GetBundleNameByBlockID(blockNumber uint64) (string, error) {
 	block, err := b.blockDB.GetBlock(blockNumber)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	startBlock, _, err := types.ParseBundleName(block.BundleName)
-	if err != nil {
-		return 0, err
-	}
-	return startBlock, nil
+
+	return block.BundleName, nil
 }

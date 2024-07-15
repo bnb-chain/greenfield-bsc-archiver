@@ -47,6 +47,10 @@ type Block struct {
 	// Example: 21000
 	GasUsed string `json:"gasUsed,omitempty"`
 
+	// hash
+	// Example: 0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc
+	Hash string `json:"hash,omitempty"`
+
 	// logs bloom
 	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
 	LogsBloom string `json:"logsBloom,omitempty"`

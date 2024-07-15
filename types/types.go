@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"greeenfield-bsc-archiver/models"
 	"greeenfield-bsc-archiver/util"
@@ -46,6 +47,7 @@ import (
 //}
 
 type Block struct {
+	Hash        common.Hash      `json:"hash"       gencodec:"required"`
 	ParentHash  common.Hash      `json:"parentHash"       gencodec:"required"`
 	UncleHash   common.Hash      `json:"sha3Uncles"       gencodec:"required"`
 	Coinbase    common.Address   `json:"miner"`
@@ -317,11 +319,11 @@ func BuildBlock(bundleBlock *Block) *models.Block {
 			StateRoot:        uncle.Root.String(),
 			TransactionsRoot: uncle.TxHash.String(),
 			ReceiptsRoot:     uncle.ReceiptHash.String(),
-			LogsBloom:        string(uncle.Bloom.Bytes()),
+			LogsBloom:        hexutil.Bytes(uncle.Bloom.Bytes()).String(),
 			GasLimit:         util.Uint64ToHex(uncle.GasLimit),
 			GasUsed:          util.Uint64ToHex(uncle.GasUsed),
 			Timestamp:        util.Uint64ToHex(uncle.Time),
-			ExtraData:        string(uncle.Extra),
+			ExtraData:        hexutil.Bytes(uncle.Extra).String(),
 			MixHash:          uncle.MixDigest.String(),
 			Nonce:            util.Uint64ToHex(uncle.Nonce.Uint64()),
 		}
@@ -359,36 +361,37 @@ func BuildBlock(bundleBlock *Block) *models.Block {
 	}
 
 	blockInfo := &models.Block{
+		Hash:             bundleBlock.Hash.String(),
 		ParentHash:       bundleBlock.ParentHash.String(),
 		Sha3Uncles:       bundleBlock.UncleHash.String(),
 		Miner:            bundleBlock.Coinbase.String(),
 		StateRoot:        bundleBlock.Root.String(),
 		TransactionsRoot: bundleBlock.TxHash.String(),
 		ReceiptsRoot:     bundleBlock.ReceiptHash.String(),
-		LogsBloom:        string(bundleBlock.Bloom.Bytes()),
+		LogsBloom:        hexutil.Bytes(bundleBlock.Bloom.Bytes()).String(),
 		GasLimit:         util.Uint64ToHex(bundleBlock.GasLimit),
 		GasUsed:          util.Uint64ToHex(bundleBlock.GasUsed),
 		Timestamp:        util.Uint64ToHex(bundleBlock.Time),
-		ExtraData:        string(bundleBlock.Extra),
+		ExtraData:        hexutil.Bytes(bundleBlock.Extra).String(),
 		MixHash:          bundleBlock.MixDigest.String(),
-		Nonce:            util.Uint64ToHex(bundleBlock.Nonce.Uint64()),
+		Nonce:            hexutil.Bytes(bundleBlock.Nonce[:]).String(),
 
 		Transactions: txs,
 		Uncles:       uncles,
 		Withdrawals:  withdrawals,
 	}
 	if bundleBlock.Difficulty != nil {
-		difficulty := bundleBlock.Difficulty.String()
+		difficulty := util.Uint64ToHex(bundleBlock.Difficulty.Uint64())
 		blockInfo.Difficulty = &difficulty
 		//blockInfo.Difficulty = bundleBlock.Difficulty
 	}
 	if bundleBlock.Number != nil {
-		number := bundleBlock.Number.String()
+		number := util.Uint64ToHex(bundleBlock.Number.Uint64())
 		blockInfo.Number = &number
 		//blockInfo.Number = bundleBlock.Number
 	}
 	if bundleBlock.BaseFee != nil {
-		baseFeePerGas := bundleBlock.BaseFee.String()
+		baseFeePerGas := util.Uint64ToHex(bundleBlock.BaseFee.Uint64())
 		blockInfo.BaseFeePerGas = &baseFeePerGas
 		//blockInfo.BaseFeePerGas = bundleBlock.BaseFee
 	}

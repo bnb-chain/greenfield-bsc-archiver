@@ -455,6 +455,10 @@ func init() {
           "type": "string",
           "example": "21000"
         },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+        },
         "logsBloom": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
@@ -1173,6 +1177,10 @@ func init() {
         "gasUsed": {
           "type": "string",
           "example": "21000"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
         },
         "logsBloom": {
           "type": "string",

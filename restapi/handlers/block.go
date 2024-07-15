@@ -52,13 +52,13 @@ func HandleGetBundleStartBlockID() func(params block.GetBundleStartBlockIDParams
 		if err != nil {
 			return block.NewGetBundleStartBlockIDBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("invalid block id")))
 		}
-		id, err := service.BlockSvc.GetBundleStartBlockID(blockNum)
+		name, err := service.BlockSvc.GetBundleNameByBlockID(blockNum)
 		if err != nil {
 			return block.NewGetBundleStartBlockIDInternalServerError().WithPayload(service.InternalErrorWithError(err))
 		}
 
 		response := &models.GetBundleStartBlockIDRPCResponse{
-			Data: util.Uint64ToString(id),
+			Data: name,
 		}
 		return block.NewGetBundleStartBlockIDOK().WithPayload(response)
 	}

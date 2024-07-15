@@ -2,6 +2,7 @@ package util
 
 import (
 	"crypto/sha256"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -83,6 +84,11 @@ func Int64ToHex(int64 int64) string {
 // Uint64ToHex converts uint64 to hex string
 func Uint64ToHex(uint64 uint64) string {
 	return "0x" + strconv.FormatUint(uint64, 16)
+}
+
+// Uint64ToHexNonce converts uint64 to hex string
+func Uint64ToHexNonce(uint64 uint64) string {
+	return fmt.Sprintf("0x%016x", uint64)
 }
 
 // IsHexHash verifies whether a string can represent a valid hex hash

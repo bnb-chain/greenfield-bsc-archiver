@@ -208,60 +208,65 @@ func BuildBlock(block *RpcBlock) *models.Block {
 		}
 	}
 
-	withdrawals := make([]*models.Withdrawal, len(*block.Withdrawals))
-	for i, withdrawal := range *block.Withdrawals {
-		withdrawals[i] = &models.Withdrawal{
-			Index:     util.Uint64ToHex(withdrawal.Index),
-			Validator: util.Uint64ToHex(withdrawal.Validator),
-			Address:   withdrawal.Address.Hex(),
-			Amount:    util.Uint64ToHex(withdrawal.Amount),
+	var withdrawals []*models.Withdrawal
+	if block.Withdrawals != nil {
+		withdrawals := make([]*models.Withdrawal, len(*block.Withdrawals))
+		for i, withdrawal := range *block.Withdrawals {
+			withdrawals[i] = &models.Withdrawal{
+				Index:     util.Uint64ToHex(withdrawal.Index),
+				Validator: util.Uint64ToHex(withdrawal.Validator),
+				Address:   withdrawal.Address.Hex(),
+				Amount:    util.Uint64ToHex(withdrawal.Amount),
+			}
 		}
 	}
-
-	uncles := make([]*models.Header, len(*block.Uncles))
-	for i, uncle := range *block.Uncles {
-		uncles[i] = &models.Header{
-			ParentHash:       uncle.ParentHash.String(),
-			Sha3Uncles:       uncle.UncleHash.String(),
-			Miner:            uncle.Coinbase.String(),
-			StateRoot:        uncle.Root.String(),
-			TransactionsRoot: uncle.TxHash.String(),
-			ReceiptsRoot:     uncle.ReceiptHash.String(),
-			LogsBloom:        hexutil.Bytes(uncle.Bloom.Bytes()).String(),
-			GasLimit:         uncle.GasLimit.String(),
-			GasUsed:          uncle.GasUsed.String(),
-			Timestamp:        uncle.Time.String(),
-			ExtraData:        uncle.Extra.String(),
-			MixHash:          uncle.MixDigest.String(),
-			Nonce:            util.Uint64ToHex(uncle.Nonce.Uint64()),
-		}
-		if uncle.Difficulty != nil {
-			difficulty := uncle.Difficulty.String()
-			uncles[i].Difficulty = &difficulty
-		}
-		if uncle.Number != nil {
-			number := uncle.Number.String()
-			uncles[i].Number = &number
-		}
-		if uncle.BaseFee != nil {
-			baseFeePerGas := uncle.BaseFee.String()
-			uncles[i].BaseFeePerGas = &baseFeePerGas
-		}
-		if uncle.WithdrawalsHash != nil {
-			withdrawalsHash := uncle.WithdrawalsHash.String()
-			uncles[i].WithdrawalsRoot = &withdrawalsHash
-		}
-		if uncle.BlobGasUsed != nil {
-			blobGasUsed := uncle.BlobGasUsed.String()
-			uncles[i].BlobGasUsed = &blobGasUsed
-		}
-		if uncle.ExcessBlobGas != nil {
-			excessBlobGas := uncle.ExcessBlobGas.String()
-			uncles[i].ExcessBlobGas = &excessBlobGas
-		}
-		if uncle.ParentBeaconRoot != nil {
-			parentBeaconRoot := uncle.ParentBeaconRoot.String()
-			uncles[i].ParentBeaconBlockRoot = &parentBeaconRoot
+	var uncles []*models.Header
+	if block.Uncles != nil {
+		uncles = make([]*models.Header, len(*block.Uncles))
+		for i, uncle := range *block.Uncles {
+			uncles[i] = &models.Header{
+				ParentHash:       uncle.ParentHash.String(),
+				Sha3Uncles:       uncle.UncleHash.String(),
+				Miner:            uncle.Coinbase.String(),
+				StateRoot:        uncle.Root.String(),
+				TransactionsRoot: uncle.TxHash.String(),
+				ReceiptsRoot:     uncle.ReceiptHash.String(),
+				LogsBloom:        hexutil.Bytes(uncle.Bloom.Bytes()).String(),
+				GasLimit:         uncle.GasLimit.String(),
+				GasUsed:          uncle.GasUsed.String(),
+				Timestamp:        uncle.Time.String(),
+				ExtraData:        uncle.Extra.String(),
+				MixHash:          uncle.MixDigest.String(),
+				Nonce:            util.Uint64ToHex(uncle.Nonce.Uint64()),
+			}
+			if uncle.Difficulty != nil {
+				difficulty := uncle.Difficulty.String()
+				uncles[i].Difficulty = &difficulty
+			}
+			if uncle.Number != nil {
+				number := uncle.Number.String()
+				uncles[i].Number = &number
+			}
+			if uncle.BaseFee != nil {
+				baseFeePerGas := uncle.BaseFee.String()
+				uncles[i].BaseFeePerGas = &baseFeePerGas
+			}
+			if uncle.WithdrawalsHash != nil {
+				withdrawalsHash := uncle.WithdrawalsHash.String()
+				uncles[i].WithdrawalsRoot = &withdrawalsHash
+			}
+			if uncle.BlobGasUsed != nil {
+				blobGasUsed := uncle.BlobGasUsed.String()
+				uncles[i].BlobGasUsed = &blobGasUsed
+			}
+			if uncle.ExcessBlobGas != nil {
+				excessBlobGas := uncle.ExcessBlobGas.String()
+				uncles[i].ExcessBlobGas = &excessBlobGas
+			}
+			if uncle.ParentBeaconRoot != nil {
+				parentBeaconRoot := uncle.ParentBeaconRoot.String()
+				uncles[i].ParentBeaconBlockRoot = &parentBeaconRoot
+			}
 		}
 	}
 

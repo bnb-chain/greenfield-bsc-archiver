@@ -1,6 +1,6 @@
 {
   "chain": "BSC",
-  "bucket_name": "bsc-historical-blocks",
+  "bucket_name": "bsc-historical-blocks-test",
   "bundle_service_endpoints": [
     "https://gnfd-testnet-bundle.nodereal.io"
   ],

@@ -12,7 +12,7 @@
     "https://gnfd-testnet-bundle.nodereal.io"
   ],
   "rpc_addrs": [
-    "https://bsc-mainnet.nodereal.io/v1/e52b23a60ebd4446811e455c9eb947ec"
+    "https://bsc-mainnet.nodereal.io/v1/api_key"
   ],
   "gnfd_rpc_addr": "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org",
   "temp_dir": "temp",

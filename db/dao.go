@@ -9,7 +9,6 @@ type BlockDao interface {
 	BlockDB
 	BundleDB
 	SaveBlock(block *Block) error
-	//BlobDB
 }
 
 type BlockSvcDB struct {

@@ -3,7 +3,7 @@ name: Docker
 on:
   pull_request:
     branches:
-      - develop
+      - main
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}

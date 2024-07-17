@@ -27,6 +27,8 @@ const (
 	BundleStatusCreatedOnChain = 2
 	BundleStatusSealedOnChain  = 3
 
+	DBRetryTimes = 3
+
 	LoopSleepTime = 10 * time.Millisecond
 	WaitSleepTime = 100 * time.Millisecond
 	BSCPauseTime  = 3 * time.Second
@@ -124,7 +126,16 @@ func (b *BlockIndexer) StartConcurrentSync() {
 func (b *BlockIndexer) StartLoop() {
 	go func() {
 		// nextBlockID defines the block number (BSC)
-		nextBlockID, err := b.getNextBlockNum()
+		var nextBlockID uint64
+		var err error
+		for retries := 0; retries < DBRetryTimes; retries++ {
+			nextBlockID, err = b.getNextBlockNum()
+			if err == nil {
+				break
+			}
+			logging.Logger.Errorf("Failed to get next block number: %v. Retrying... (%d/3)", err, retries+1)
+			time.Sleep(time.Second * 2) // Wait for 2 seconds before retrying
+		}
 		if err != nil {
 			panic(err)
 		}

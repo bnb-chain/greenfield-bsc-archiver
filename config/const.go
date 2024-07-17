@@ -14,5 +14,5 @@ const (
 
 	DefaultReUploadBundleThreshold = 3600 // in second
 
-	DefaultConcurrencyLimit = 5 // in second
+	DefaultConcurrencyLimit = 5
 )

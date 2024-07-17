@@ -8,7 +8,6 @@ import (
 type BlockDao interface {
 	BlockDB
 	BundleDB
-	SaveBlock(block *Block) error
 }
 
 type BlockSvcDB struct {
@@ -27,8 +26,10 @@ type BlockDB interface {
 	GetBlockByRoot(root string) (*Block, error)
 	GetLatestProcessedBlock() (*Block, error)
 	GetEarliestUnverifiedBlock() (*Block, error)
+	GetEarliestVerifiedBlock() (*Block, error)
 	UpdateBlockStatus(block uint64, status Status) error
 	UpdateBlocksStatus(startBlock, endBlock uint64, status Status) error
+	SaveBlock(block *Block) error
 }
 
 func (d *BlockSvcDB) GetBlock(blockNumber uint64) (*Block, error) {
@@ -70,6 +71,15 @@ func (d *BlockSvcDB) GetLatestProcessedBlock() (*Block, error) {
 func (d *BlockSvcDB) GetEarliestUnverifiedBlock() (*Block, error) {
 	block := Block{}
 	err := d.db.Model(Block{}).Where("status = ?", Processed).Order("block_number asc").Take(&block).Error
+	if err != nil {
+		return nil, err
+	}
+	return &block, nil
+}
+
+func (d *BlockSvcDB) GetEarliestVerifiedBlock() (*Block, error) {
+	block := Block{}
+	err := d.db.Model(Block{}).Where("status = ?", Verified).Order("block_number asc").Take(&block).Error
 	if err != nil {
 		return nil, err
 	}

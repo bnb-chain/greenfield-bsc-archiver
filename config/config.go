@@ -26,7 +26,6 @@ type SyncerConfig struct {
 	StartBlock                       uint64        `json:"start_block"`                          // StartBlock is used to init the syncer which block synced from, only need to provide once.
 	CreateBundleBlockInterval        uint64        `json:"create_bundle_block_interval"`         // CreateBundleBlockInterval defines the number of block that syncer would assemble blobs and upload to bundle service
 	BundleServiceEndpoints           []string      `json:"bundle_service_endpoints"`             // BundleServiceEndpoints is a list of bundle service address
-	BeaconRPCAddrs                   []string      `json:"beacon_rpc_addrs"`                     // BeaconRPCAddrs is a list of beacon chain RPC address
 	RPCAddrs                         []string      `json:"rpc_addrs"`                            // RPCAddrs ETH or BSC RPC addr
 	GnfdRpcAddr                      string        `json:"gnfd_rpc_addr"`                        // GnfdRpcAddr is the Greenfield RPC address
 	TempDir                          string        `json:"temp_dir"`                             // TempDir is used to store blobs and created bundle

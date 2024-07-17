@@ -223,63 +223,6 @@ func (c *BundleClient) UploadAndFinalizeBundle(bundleName, bucketName, bundleDir
 	return nil
 }
 
-func (c *BundleClient) UploadObject(fileName, bucketName, bundleName, contentType string, file *os.File) error {
-	// CreateBlock a new SHA256 hash
-	hash := sha256.New()
-
-	// Write the file's content to the hash
-	if _, err := io.Copy(hash, file); err != nil {
-		return err
-	}
-
-	// Get the hash sum in bytes
-	hashInBytes := hash.Sum(nil)[:]
-
-	// Hex encode the hash sum
-	hashInHex := hex.EncodeToString(hashInBytes)
-
-	// Reset the file read pointer to the beginning
-	_, _ = file.Seek(0, 0)
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-
-	filePart, err := writer.CreateFormFile("file", fileName)
-	if err != nil {
-		return err
-	}
-	_, err = io.Copy(filePart, file)
-	if err != nil {
-		return err
-	}
-	err = writer.Close()
-	if err != nil {
-		return err
-	}
-	headers := map[string]string{
-		"Content-Type":              writer.FormDataContentType(),
-		"X-Bundle-Bucket-Name":      bucketName,
-		"X-Bundle-Name":             bundleName,
-		"X-Bundle-File-Name":        fileName,
-		"X-Bundle-Content-Type":     contentType,
-		"X-Bundle-Expiry-Timestamp": fmt.Sprintf("%d", time.Now().Add(bundleExpiredTime).Unix()),
-		"X-Bundle-File-Sha256":      hashInHex,
-	}
-	resp, err := c.sendRequest(c.host+pathUploadObject, "POST", headers, body.Bytes())
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	bodyStr, err := ReadResponseBody(resp)
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("received non-OK response status: %s, err %s", resp.Status, bodyStr)
-	}
-	return nil
-}
-
 func (c *BundleClient) GetBundleInfo(bucketName, bundleName string) (*model.QueryBundleResponse, error) {
 	req, err := http.NewRequest("GET", c.host+fmt.Sprintf(pathGetBundleInfo, bucketName, bundleName), nil)
 	if err != nil {

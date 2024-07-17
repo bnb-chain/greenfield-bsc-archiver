@@ -36,6 +36,7 @@ type SyncerConfig struct {
 	DBConfig                         DBConfig      `json:"db_config"`
 	MetricsConfig                    MetricsConfig `json:"metrics_config"`
 	LogConfig                        LogConfig     `json:"log_config"`
+	ConcurrencyLimit                 int           `json:"concurrency_limit"`
 }
 
 func (s *SyncerConfig) Validate() {
@@ -183,6 +184,9 @@ func ParseSyncerConfigFromFile(filePath string) *SyncerConfig {
 	}
 	if config.PrivateKey == "" { // read private key from ENV
 		config.PrivateKey = os.Getenv(EnvVarPrivateKey)
+	}
+	if config.ConcurrencyLimit == 0 {
+		config.ConcurrencyLimit = DefaultConcurrencyLimit
 	}
 	return &config
 }

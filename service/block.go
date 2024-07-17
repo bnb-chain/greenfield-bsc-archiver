@@ -18,6 +18,7 @@ type Block interface {
 	GetBundledBlockByBlockNumber(blockNumber uint64) ([]*models.Block, error)
 	GetBlockByBlockHash(blockHash common.Hash) (*models.Block, error)
 	GetLatestBlockNumber() (uint64, error)
+	GetLatestVerifiedBlockNumber() (uint64, error)
 	GetBundleNameByBlockID(blockNumber uint64) (string, error)
 }
 
@@ -82,6 +83,14 @@ func (b BlockService) GetBlockByBlockHash(blockHash common.Hash) (*models.Block,
 
 func (b BlockService) GetLatestBlockNumber() (uint64, error) {
 	block, err := b.blockDB.GetLatestProcessedBlock()
+	if err != nil {
+		return 0, err
+	}
+	return block.BlockNumber, err
+}
+
+func (b BlockService) GetLatestVerifiedBlockNumber() (uint64, error) {
+	block, err := b.blockDB.GetEarliestUnverifiedBlock()
 	if err != nil {
 		return 0, err
 	}

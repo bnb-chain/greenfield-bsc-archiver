@@ -65,7 +65,43 @@ func init() {
         }
       }
     },
-    "/bsc/v1/blocks/{block_id}/bundle/name": {
+    "//": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns information of the block matching the given block number.",
+        "operationId": "getBlockByNumberSimplified",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBlockByNumberSimplifiedRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bsc/v1/blocks/{block_number}/bundle/name": {
       "get": {
         "produces": [
           "application/json"
@@ -73,14 +109,14 @@ func init() {
         "tags": [
           "block"
         ],
-        "summary": "Get bundle name by block id",
-        "operationId": "getBundleNameByBlockID",
+        "summary": "Get bundle name by block number",
+        "operationId": "getBundleNameByBlockNumber",
         "parameters": [
           {
             "minLength": 1,
             "type": "string",
             "description": "Block identifier. Can be one of: 'head' (canonical head in node's view), 'genesis', 'finalized', \u003cslot\u003e, \u003chex encoded blockRoot with 0x prefix\u003e",
-            "name": "block_id",
+            "name": "block_number",
             "in": "path",
             "required": true
           }
@@ -89,7 +125,7 @@ func init() {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/GetBundleNameByBlockIDRPCResponse"
+              "$ref": "#/definitions/GetBundleNameByBlockNumberRPCResponse"
             }
           },
           "400": {
@@ -281,6 +317,26 @@ func init() {
         }
       }
     },
+    "GetBlockByNumberSimplifiedRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/simplifiedBlock"
+        }
+      }
+    },
     "GetBlockNumberRPCResponse": {
       "type": "object",
       "properties": {
@@ -301,7 +357,7 @@ func init() {
         }
       }
     },
-    "GetBundleNameByBlockIDRPCResponse": {
+    "GetBundleNameByBlockNumberRPCResponse": {
       "type": "object",
       "properties": {
         "code": {
@@ -627,6 +683,129 @@ func init() {
         "transactionsRoot": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "simplifiedBlock": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
         },
         "withdrawalsRoot": {
           "type": "string",
@@ -797,7 +976,43 @@ func init() {
         }
       }
     },
-    "/bsc/v1/blocks/{block_id}/bundle/name": {
+    "//": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns information of the block matching the given block number.",
+        "operationId": "getBlockByNumberSimplified",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBlockByNumberSimplifiedRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bsc/v1/blocks/{block_number}/bundle/name": {
       "get": {
         "produces": [
           "application/json"
@@ -805,14 +1020,14 @@ func init() {
         "tags": [
           "block"
         ],
-        "summary": "Get bundle name by block id",
-        "operationId": "getBundleNameByBlockID",
+        "summary": "Get bundle name by block number",
+        "operationId": "getBundleNameByBlockNumber",
         "parameters": [
           {
             "minLength": 1,
             "type": "string",
             "description": "Block identifier. Can be one of: 'head' (canonical head in node's view), 'genesis', 'finalized', \u003cslot\u003e, \u003chex encoded blockRoot with 0x prefix\u003e",
-            "name": "block_id",
+            "name": "block_number",
             "in": "path",
             "required": true
           }
@@ -821,7 +1036,7 @@ func init() {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/GetBundleNameByBlockIDRPCResponse"
+              "$ref": "#/definitions/GetBundleNameByBlockNumberRPCResponse"
             }
           },
           "400": {
@@ -1013,6 +1228,26 @@ func init() {
         }
       }
     },
+    "GetBlockByNumberSimplifiedRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/simplifiedBlock"
+        }
+      }
+    },
     "GetBlockNumberRPCResponse": {
       "type": "object",
       "properties": {
@@ -1033,7 +1268,7 @@ func init() {
         }
       }
     },
-    "GetBundleNameByBlockIDRPCResponse": {
+    "GetBundleNameByBlockNumberRPCResponse": {
       "type": "object",
       "properties": {
         "code": {
@@ -1359,6 +1594,129 @@ func init() {
         "transactionsRoot": {
           "type": "string",
           "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "simplifiedBlock": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
         },
         "withdrawalsRoot": {
           "type": "string",

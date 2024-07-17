@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-openapi/runtime/middleware"
 	"greeenfield-bsc-archiver/models"
 	"greeenfield-bsc-archiver/service"
+	"greeenfield-bsc-archiver/types"
 	"greeenfield-bsc-archiver/util"
 
 	"greeenfield-bsc-archiver/restapi/operations/block"
@@ -45,22 +47,22 @@ func HandleGetBundledBlockByNumber() func(params block.GetBundledBlockByNumberPa
 	}
 }
 
-func HandleGetBundleNameByBlockID() func(params block.GetBundleNameByBlockIDParams) middleware.Responder {
-	return func(params block.GetBundleNameByBlockIDParams) middleware.Responder {
-		blockID := params.BlockID
+func HandleGetBundleNameByBlockNumber() func(params block.GetBundleNameByBlockNumberParams) middleware.Responder {
+	return func(params block.GetBundleNameByBlockNumberParams) middleware.Responder {
+		blockID := params.BlockNumber
 		blockNum, err := util.HexToUint64(blockID)
 		if err != nil {
-			return block.NewGetBundleNameByBlockIDBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("invalid block id")))
+			return block.NewGetBundleNameByBlockNumberBadRequest().WithPayload(service.BadRequestWithError(fmt.Errorf("invalid block number")))
 		}
 		name, err := service.BlockSvc.GetBundleNameByBlockID(blockNum)
 		if err != nil {
-			return block.NewGetBundleNameByBlockIDInternalServerError().WithPayload(service.InternalErrorWithError(err))
+			return block.NewGetBundleNameByBlockNumberInternalServerError().WithPayload(service.InternalErrorWithError(err))
 		}
 
-		response := &models.GetBundleNameByBlockIDRPCResponse{
+		response := &models.GetBundleNameByBlockNumberRPCResponse{
 			Data: name,
 		}
-		return block.NewGetBundleNameByBlockIDOK().WithPayload(response)
+		return block.NewGetBundleNameByBlockNumberOK().WithPayload(response)
 	}
 }
 
@@ -82,7 +84,24 @@ func HandleGetBlockByNumber() func(params block.GetBlockByNumberParams) middlewa
 
 		switch rpcRequest.Method {
 		case "eth_getBlockByNumber":
-			blockNum, err := util.HexToUint64(rpcRequest.Params[0])
+			var (
+				blockNum     uint64
+				err          error
+				isFullTxList bool
+			)
+			if len(rpcRequest.Params) != 2 {
+				return block.NewGetBlockByNumberOK().WithPayload(
+					&models.GetBlockByNumberRPCResponse{
+						ID:      rpcRequest.ID,
+						Jsonrpc: rpcRequest.Jsonrpc,
+						Error: &models.RPCError{
+							Code:    -32602,
+							Message: "invalid argument",
+						},
+					},
+				)
+			}
+			isFullTxList, err = strconv.ParseBool(rpcRequest.Params[1])
 			if err != nil {
 				return block.NewGetBlockByNumberOK().WithPayload(
 					&models.GetBlockByNumberRPCResponse{
@@ -95,9 +114,48 @@ func HandleGetBlockByNumber() func(params block.GetBlockByNumberParams) middlewa
 					},
 				)
 			}
+			switch rpcRequest.Params[0] {
+			case "latest":
+				blockNum, err = service.BlockSvc.GetLatestVerifiedBlockNumber()
+				if err != nil {
+					return block.NewGetBlockByNumberOK().WithPayload(
+						&models.GetBlockByNumberRPCResponse{
+							ID:      rpcRequest.ID,
+							Jsonrpc: rpcRequest.Jsonrpc,
+							Error: &models.RPCError{
+								Code:    -32602,
+								Message: "invalid argument",
+							},
+						},
+					)
+				}
+			default:
+				blockNum, err = util.HexToUint64(rpcRequest.Params[0])
+				if err != nil {
+					return block.NewGetBlockByNumberOK().WithPayload(
+						&models.GetBlockByNumberRPCResponse{
+							ID:      rpcRequest.ID,
+							Jsonrpc: rpcRequest.Jsonrpc,
+							Error: &models.RPCError{
+								Code:    -32602,
+								Message: "invalid argument",
+							},
+						},
+					)
+				}
+			}
 			blockInfo, err := service.BlockSvc.GetBlockByBlockNumber(blockNum)
 			if err != nil {
 				return block.NewGetBlockByNumberInternalServerError().WithPayload(service.InternalErrorWithError(err))
+			}
+
+			if !isFullTxList {
+				response := &models.GetBlockByNumberSimplifiedRPCResponse{
+					ID:      rpcRequest.ID,
+					Jsonrpc: rpcRequest.Jsonrpc,
+					Result:  types.BlockToSimplifiedBlock(blockInfo),
+				}
+				return block.NewGetBlockByNumberSimplifiedOK().WithPayload(response)
 			}
 
 			response := &models.GetBlockByNumberRPCResponse{

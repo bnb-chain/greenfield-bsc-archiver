@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// GetBundleNameByBlockIDRPCResponse get bundle name by block ID RPC response
+// GetBundleNameByBlockNumberRPCResponse get bundle name by block number RPC response
 //
-// swagger:model GetBundleNameByBlockIDRPCResponse
-type GetBundleNameByBlockIDRPCResponse struct {
+// swagger:model GetBundleNameByBlockNumberRPCResponse
+type GetBundleNameByBlockNumberRPCResponse struct {
 
 	// status code
 	// Example: 200
@@ -30,18 +30,18 @@ type GetBundleNameByBlockIDRPCResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-// Validate validates this get bundle name by block ID RPC response
-func (m *GetBundleNameByBlockIDRPCResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this get bundle name by block number RPC response
+func (m *GetBundleNameByBlockNumberRPCResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this get bundle name by block ID RPC response based on context it is used
-func (m *GetBundleNameByBlockIDRPCResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this get bundle name by block number RPC response based on context it is used
+func (m *GetBundleNameByBlockNumberRPCResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *GetBundleNameByBlockIDRPCResponse) MarshalBinary() ([]byte, error) {
+func (m *GetBundleNameByBlockNumberRPCResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -49,8 +49,8 @@ func (m *GetBundleNameByBlockIDRPCResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *GetBundleNameByBlockIDRPCResponse) UnmarshalBinary(b []byte) error {
-	var res GetBundleNameByBlockIDRPCResponse
+func (m *GetBundleNameByBlockNumberRPCResponse) UnmarshalBinary(b []byte) error {
+	var res GetBundleNameByBlockNumberRPCResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

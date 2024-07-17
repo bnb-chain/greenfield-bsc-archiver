@@ -101,16 +101,39 @@ paths:
           description: 'internal server error'
           schema:
             $ref: "#/definitions/Error"
-  /bsc/v1/blocks/{block_id}/bundle/name:
-    get:
+  //:
+    post:
       tags:
         - "block"
-      summary: "Get bundle name by block id"
-      operationId: "getBundleNameByBlockID"
+      summary: "Returns information of the block matching the given block number."
+      operationId: "getBlockByNumberSimplified"
       produces:
         - "application/json"
       parameters:
-        - name: "block_id"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/RPCRequest"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GetBlockByNumberSimplifiedRPCResponse"
+        "500":
+          description: 'internal server error'
+          schema:
+            $ref: "#/definitions/Error"
+  /bsc/v1/blocks/{block_number}/bundle/name:
+    get:
+      tags:
+        - "block"
+      summary: "Get bundle name by block number"
+      operationId: "getBundleNameByBlockNumber"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "block_number"
           in: "path"
           description: "Block identifier. Can be one of: 'head' (canonical head in node's view), 'genesis', 'finalized', <slot>, <hex encoded blockRoot with 0x prefix>"
           required: true
@@ -120,7 +143,7 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/GetBundleNameByBlockIDRPCResponse"
+            $ref: "#/definitions/GetBundleNameByBlockNumberRPCResponse"
         "400":
           description: 'Bad Request'
           schema:
@@ -219,6 +242,98 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/transaction'
+      uncles:
+        type: array
+        items:
+          $ref: '#/definitions/header'
+      withdrawals:
+        type: array
+        items:
+          $ref: '#/definitions/withdrawal'
+  simplifiedBlock:
+    type: object
+    properties:
+      hash:
+        type: string
+        example: "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+      parentHash:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      sha3Uncles:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      miner:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef12345678"
+      stateRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      transactionsRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      receiptsRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      logsBloom:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      difficulty:
+        type: string
+        example: "0x186a1"
+        x-nullable: true
+      totalDifficulty:
+        type: string
+        example: "0x176d20b"
+        x-nullable: true
+      size:
+        type: string
+        example: "0x176d20b"
+      number:
+        type: string
+        example: "100000"
+        x-nullable: true
+      gasLimit:
+        type: string
+        example: "8000000"
+      gasUsed:
+        type: string
+        example: "21000"
+      timestamp:
+        type: string
+        example: "0x5f4e5f87"
+      extraData:
+        type: string
+        example: "0x123456"
+      mixHash:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+      nonce:
+        type: string
+        example: "0x0000000000000042"
+      baseFeePerGas:
+        type: string
+        example: "1000000000"
+        x-nullable: true
+      withdrawalsRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        x-nullable: true
+      blobGasUsed:
+        type: string
+        example: "1000"
+        x-nullable: true
+      excessBlobGas:
+        type: string
+        example: "500"
+        x-nullable: true
+      parentBeaconBlockRoot:
+        type: string
+        example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        x-nullable: true
+      transactions:
+        type: array
+        items:
+          type: string
       uncles:
         type: array
         items:
@@ -436,6 +551,20 @@ definitions:
         example: 1
       error:
         $ref: "#/definitions/RPCError"
+  GetBlockByNumberSimplifiedRPCResponse:
+    type: object
+    properties:
+      jsonrpc:
+        type: string
+        example: "2.0"
+      result:
+        type: object
+        $ref: "#/definitions/simplifiedBlock"
+      id:
+        type: integer
+        example: 1
+      error:
+        $ref: "#/definitions/RPCError"
 
   GetBundledBlockByNumberRPCResponse:
     type: object
@@ -482,7 +611,7 @@ definitions:
         example: 1
       error:
         $ref: "#/definitions/RPCError"
-  GetBundleNameByBlockIDRPCResponse:
+  GetBundleNameByBlockNumberRPCResponse:
     type: object
     properties:
       code:

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"cosmossdk.io/math"
@@ -27,6 +28,7 @@ const (
 	BundleStatusSealedOnChain  = 3
 
 	LoopSleepTime = 10 * time.Millisecond
+	WaitSleepTime = 100 * time.Millisecond
 	BSCPauseTime  = 3 * time.Second
 
 	ETHPauseTime         = 90 * time.Second
@@ -41,14 +43,19 @@ type curBundleDetail struct {
 }
 
 type BlockIndexer struct {
-	blockDao     db.BlockDao
-	client       external.IClient
-	bundleClient *cmn.BundleClient
-	chainClient  *cmn.ChainClient
-	config       *config.SyncerConfig
-	bundleDetail *curBundleDetail
-	spClient     *cmn.SPClient
-	params       *cmn.VersionedParams
+	blockDao             db.BlockDao
+	client               external.IClient
+	bundleClient         *cmn.BundleClient
+	chainClient          *cmn.ChainClient
+	config               *config.SyncerConfig
+	bundleDetail         *curBundleDetail
+	spClient             *cmn.SPClient
+	params               *cmn.VersionedParams
+	blocks               map[uint64]*types.RpcBlock
+	blocksLock           sync.Mutex
+	blockHeightLock      sync.Mutex
+	indexBlockHeight     uint64
+	processorBlockHeight uint64
 }
 
 func NewBlockIndexer(
@@ -72,6 +79,7 @@ func NewBlockIndexer(
 		bundleClient: bundleClient,
 		chainClient:  chainClient,
 		config:       cfg,
+		blocks:       make(map[uint64]*types.RpcBlock),
 	}
 	bs.client = external.NewClient(cfg)
 	if cfg.MetricsConfig.Enable && len(cfg.MetricsConfig.SPEndpoint) > 0 {
@@ -84,6 +92,35 @@ func NewBlockIndexer(
 	return bs
 }
 
+func (b *BlockIndexer) StartConcurrentSync() {
+	var wg sync.WaitGroup
+	for i := 0; i < b.config.ConcurrencyLimit; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				var blockID uint64
+				b.blockHeightLock.Lock()
+				blockID = b.indexBlockHeight
+				b.indexBlockHeight++
+				b.blockHeightLock.Unlock()
+
+				for {
+					err := b.sync(blockID)
+					if err != nil {
+						logging.Logger.Error("Failed to sync: ", err)
+						time.Sleep(time.Second)
+						continue
+					}
+					break
+				}
+				logging.Logger.Infof("Successfully fetched and incremented block ID to %d", blockID)
+			}
+		}()
+	}
+	wg.Wait()
+}
+
 func (b *BlockIndexer) StartLoop() {
 	go func() {
 		// nextBlockID defines the block number (BSC)
@@ -91,13 +128,33 @@ func (b *BlockIndexer) StartLoop() {
 		if err != nil {
 			panic(err)
 		}
+		b.processorBlockHeight = nextBlockID
+		b.indexBlockHeight = nextBlockID
 		err = b.LoadProgressAndResume(nextBlockID)
 		if err != nil {
 			panic(err)
 		}
+		for {
+			b.StartConcurrentSync()
+			time.Sleep(LoopSleepTime)
+		}
+	}()
+	go func() {
 		syncTicker := time.NewTicker(LoopSleepTime)
 		for range syncTicker.C {
-			if err = b.sync(); err != nil {
+			blockID := b.processorBlockHeight
+			b.blocksLock.Lock()
+			block, exists := b.blocks[blockID]
+			b.blocksLock.Unlock()
+			for !exists {
+				time.Sleep(WaitSleepTime)
+				block, exists = b.blocks[blockID]
+			}
+			b.blocksLock.Lock()
+			delete(b.blocks, blockID)
+			b.blocksLock.Unlock()
+			b.processorBlockHeight++
+			if err := b.process(b.bundleDetail.name, blockID, block); err != nil {
 				logging.Logger.Error(err)
 				continue
 			}
@@ -115,16 +172,11 @@ func (b *BlockIndexer) StartLoop() {
 	go b.monitorQuota()
 }
 
-func (b *BlockIndexer) sync() error {
+func (b *BlockIndexer) sync(blockID uint64) error {
 	var (
-		blockID  uint64
 		err      error
 		rpcBlock *types.RpcBlock
 	)
-	blockID, err = b.getNextBlockNum()
-	if err != nil {
-		return err
-	}
 	ctx, cancel := context.WithTimeout(context.Background(), RPCTimeout)
 	defer cancel()
 
@@ -145,24 +197,9 @@ func (b *BlockIndexer) sync() error {
 		return err
 	}
 
-	bundleName := b.bundleDetail.name
-	err = b.process(bundleName, blockID, rpcBlock)
-	if err != nil {
-		return err
-	}
-
-	blockToSave, err := b.toBlock(rpcBlock, blockID, bundleName)
-	if err != nil {
-		return err
-	}
-
-	err = b.blockDao.SaveBlock(blockToSave)
-	if err != nil {
-		logging.Logger.Errorf("failed to save block(h=%d), err=%s", blockToSave.BlockNumber, err.Error())
-		return err
-	}
-	metrics.SyncedBlockIDGauge.Set(float64(blockID))
-	logging.Logger.Infof("saved block(block_id=%d) to DB \n", blockID)
+	b.blocksLock.Lock()
+	b.blocks[blockID] = rpcBlock
+	b.blocksLock.Unlock()
 	return nil
 }
 
@@ -194,6 +231,19 @@ func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.R
 			finalizeBlockID: endBlockID,
 		}
 	}
+
+	blockToSave, err := b.toBlock(block, blockID, bundleName)
+	if err != nil {
+		return err
+	}
+
+	err = b.blockDao.SaveBlock(blockToSave)
+	if err != nil {
+		logging.Logger.Errorf("failed to save block(h=%d), err=%s", blockToSave.BlockNumber, err.Error())
+		return err
+	}
+	metrics.SyncedBlockIDGauge.Set(float64(blockID))
+	logging.Logger.Infof("saved block(block_id=%d) to DB \n", blockID)
 	return nil
 }
 

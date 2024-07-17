@@ -390,3 +390,40 @@ type Tx struct {
 	R                hexutil.Big       `json:"r"`
 	S                hexutil.Big       `json:"s"`
 }
+
+func BlockToSimplifiedBlock(block *models.Block) *models.SimplifiedBlock {
+	simplifiedBlock := &models.SimplifiedBlock{
+		BaseFeePerGas:         block.BaseFeePerGas,
+		BlobGasUsed:           block.BlobGasUsed,
+		Difficulty:            block.Difficulty,
+		ExcessBlobGas:         block.ExcessBlobGas,
+		ExtraData:             block.ExtraData,
+		GasLimit:              block.GasLimit,
+		GasUsed:               block.GasUsed,
+		Hash:                  block.Hash,
+		LogsBloom:             block.LogsBloom,
+		Miner:                 block.Miner,
+		MixHash:               block.MixHash,
+		Nonce:                 block.Nonce,
+		Number:                block.Number,
+		ParentBeaconBlockRoot: block.ParentBeaconBlockRoot,
+		ParentHash:            block.ParentHash,
+		ReceiptsRoot:          block.ReceiptsRoot,
+		Sha3Uncles:            block.Sha3Uncles,
+		Size:                  block.Size,
+		StateRoot:             block.StateRoot,
+		Timestamp:             block.Timestamp,
+		TotalDifficulty:       block.TotalDifficulty,
+		TransactionsRoot:      block.TransactionsRoot,
+		Uncles:                block.Uncles,
+		Withdrawals:           block.Withdrawals,
+		WithdrawalsRoot:       block.WithdrawalsRoot,
+	}
+
+	txs := make([]string, len(block.Transactions))
+	for i, transaction := range block.Transactions {
+		txs[i] = transaction.Hash
+	}
+	simplifiedBlock.Transactions = txs
+	return simplifiedBlock
+}

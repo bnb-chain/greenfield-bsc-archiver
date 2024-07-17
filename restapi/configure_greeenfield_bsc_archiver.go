@@ -51,7 +51,7 @@ func configureAPI(api *operations.GreeenfieldBscArchiverAPI) http.Handler {
 
 	api.BlockGetBundledBlockByNumberHandler = block.GetBundledBlockByNumberHandlerFunc(handlers.HandleGetBundledBlockByNumber())
 	api.BlockGetBlockByNumberHandler = block.GetBlockByNumberHandlerFunc(handlers.HandleGetBlockByNumber())
-	api.BlockGetBundleNameByBlockIDHandler = block.GetBundleNameByBlockIDHandlerFunc(handlers.HandleGetBundleNameByBlockID())
+	api.BlockGetBundleNameByBlockNumberHandler = block.GetBundleNameByBlockNumberHandlerFunc(handlers.HandleGetBundleNameByBlockNumber())
 
 	api.PreServerShutdown = func() {}
 

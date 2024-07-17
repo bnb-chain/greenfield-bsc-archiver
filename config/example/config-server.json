@@ -1,6 +1,6 @@
 {
   "chain": "BSC",
-  "bucket_name": "bsc-historical-blocks-test",
+  "bucket_name": "bsc-historical-blocks-testnet-concurrency",
   "bundle_service_endpoints": [
     "https://gnfd-testnet-bundle.nodereal.io"
   ],
@@ -8,7 +8,7 @@
     "dialect": "mysql",
     "username": "root",
     "password": "root1234",
-    "url": "/greenfield-bsc-archiver?charset=utf8&parseTime=True&loc=Local",
+    "url": "/greenfield-bsc-archiver-concurrency?charset=utf8&parseTime=True&loc=Local",
     "max_idle_conns": 10,
     "max_open_conns": 100
   },
@@ -29,6 +29,6 @@
   },
   "metrics_config": {
     "enable": true,
-    "sp_endpoint": "https://gnfd-testnet-sp2.bnbchain.org"
+    "sp_endpoint": "https://gnfd-testnet-sp3.bnbchain.org"
   }
 }

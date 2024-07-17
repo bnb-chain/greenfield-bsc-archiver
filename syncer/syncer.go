@@ -165,10 +165,14 @@ func (b *BlockIndexer) StartLoop() {
 			delete(b.blocks, blockID)
 			b.blocksLock.Unlock()
 			b.processorBlockHeight++
-			if err := b.process(b.bundleDetail.name, blockID, block); err != nil {
-				logging.Logger.Error(err)
-				continue
+			var err error
+			for err != nil {
+				if err = b.process(b.bundleDetail.name, blockID, block); err != nil {
+					logging.Logger.Error(err)
+					continue
+				}
 			}
+
 		}
 	}()
 	go func() {
@@ -300,6 +304,7 @@ func (b *BlockIndexer) createLocalBundleDir() error {
 			CreatedTime: time.Now().Unix(),
 		})
 }
+
 func (b *BlockIndexer) finalizeBundle(bundleName, bundleDir, bundleFilePath string) error {
 	err := b.bundleClient.UploadAndFinalizeBundle(bundleName, b.getBucketName(), bundleDir, bundleFilePath)
 	if err != nil {

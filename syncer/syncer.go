@@ -172,7 +172,6 @@ func (b *BlockIndexer) StartLoop() {
 					continue
 				}
 			}
-
 		}
 	}()
 	go func() {

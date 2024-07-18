@@ -1,6 +1,6 @@
 {
   "chain": "BSC",
-  "bucket_name": "bsc-historical-blocks-testnet-concurrency",
+  "bucket_name": "test-barry",
   "concurrency_limit": 4,
   "start_block": 0,
   "enable_indiv_block_verification": false,
@@ -10,11 +10,11 @@
     "https://gnfd-testnet-bundle.nodereal.io"
   ],
   "rpc_addrs": [
-    "https://bsc-testnet.nodereal.io/v1/private_key"
+    "https://bsc-testnet.nodereal.io/v1/2e9d633513f945d89ec95755ae183afd"
   ],
   "gnfd_rpc_addr": "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org",
   "temp_dir": "temp",
-  "private_key": "private_key",
+  "private_key": "a6f2041aeca9a09159c937b77316c9c7e2c0f1c5b7241832f84bf1d37eb49661",
   "db_config": {
     "dialect": "mysql",
     "username": "root",

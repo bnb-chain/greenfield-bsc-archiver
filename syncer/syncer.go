@@ -164,13 +164,17 @@ func (b *BlockIndexer) StartLoop() {
 			b.blocksLock.Lock()
 			delete(b.blocks, blockID)
 			b.blocksLock.Unlock()
-			b.processorBlockHeight++
-			var err error
-			for err != nil {
-				if err = b.process(b.bundleDetail.name, blockID, block); err != nil {
+			//blockID, err := b.getNextBlockNum()
+			//if err != nil {
+			//	return err
+			//}
+			for {
+				err := b.process(b.bundleDetail.name, blockID, block)
+				if err != nil {
 					logging.Logger.Error(err)
 					continue
 				}
+				break
 			}
 		}
 	}()
@@ -235,15 +239,15 @@ func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.R
 		if err != nil {
 			return err
 		}
-		logging.Logger.Infof("finalized bundle, bundle_name=%s, bucket_name=%s\n", bundleName, b.getBucketName())
-		// init next bundle
-		startBlockID := blockID + 1
-		endBlockID := blockID + b.getCreateBundleInterval()
-		b.bundleDetail = &curBundleDetail{
-			name:            types.GetBundleName(startBlockID, endBlockID),
-			startBlockID:    startBlockID,
-			finalizeBlockID: endBlockID,
-		}
+		//logging.Logger.Infof("finalized bundle, bundle_name=%s, bucket_name=%s\n", bundleName, b.getBucketName())
+		//// init next bundle
+		//startBlockID := blockID + 1
+		//endBlockID := blockID + b.getCreateBundleInterval()
+		//b.bundleDetail = &curBundleDetail{
+		//	name:            types.GetBundleName(startBlockID, endBlockID),
+		//	startBlockID:    startBlockID,
+		//	finalizeBlockID: endBlockID,
+		//}
 	}
 
 	blockToSave, err := b.toBlock(block, blockID, bundleName)
@@ -258,6 +262,18 @@ func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.R
 	}
 	metrics.SyncedBlockIDGauge.Set(float64(blockID))
 	logging.Logger.Infof("saved block(block_id=%d) to DB \n", blockID)
+
+	b.processorBlockHeight++
+	if blockID == b.bundleDetail.finalizeBlockID {
+		// init next bundle
+		startBlockID := blockID + 1
+		endBlockID := blockID + b.getCreateBundleInterval()
+		b.bundleDetail = &curBundleDetail{
+			name:            types.GetBundleName(startBlockID, endBlockID),
+			startBlockID:    startBlockID,
+			finalizeBlockID: endBlockID,
+		}
+	}
 	return nil
 }
 

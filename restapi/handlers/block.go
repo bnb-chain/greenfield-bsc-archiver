@@ -118,16 +118,7 @@ func HandleGetBlockByNumber() func(params block.GetBlockByNumberParams) middlewa
 			case "latest":
 				blockNum, err = service.BlockSvc.GetLatestVerifiedBlockNumber()
 				if err != nil {
-					return block.NewGetBlockByNumberOK().WithPayload(
-						&models.GetBlockByNumberRPCResponse{
-							ID:      rpcRequest.ID,
-							Jsonrpc: rpcRequest.Jsonrpc,
-							Error: &models.RPCError{
-								Code:    -32602,
-								Message: "invalid argument",
-							},
-						},
-					)
+					return block.NewGetBlockByNumberInternalServerError().WithPayload(service.InternalErrorWithError(err))
 				}
 			default:
 				blockNum, err = util.HexToUint64(rpcRequest.Params[0])

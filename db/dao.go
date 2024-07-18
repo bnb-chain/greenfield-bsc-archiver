@@ -79,7 +79,7 @@ func (d *BlockSvcDB) GetEarliestUnverifiedBlock() (*Block, error) {
 
 func (d *BlockSvcDB) GetEarliestVerifiedBlock() (*Block, error) {
 	block := Block{}
-	err := d.db.Model(Block{}).Where("status = ?", Verified).Order("block_number asc").Take(&block).Error
+	err := d.db.Model(Block{}).Where("status = ?", Verified).Order("block_number desc").Take(&block).Error
 	if err != nil {
 		return nil, err
 	}

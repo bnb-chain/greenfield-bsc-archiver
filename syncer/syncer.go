@@ -31,6 +31,7 @@ const (
 
 	LoopSleepTime = 10 * time.Millisecond
 	WaitSleepTime = 100 * time.Millisecond
+	MapSleepTime  = 5 * time.Second
 	BSCPauseTime  = 3 * time.Second
 
 	ETHPauseTime         = 90 * time.Second
@@ -95,6 +96,10 @@ func NewBlockIndexer(
 }
 
 func (b *BlockIndexer) StartConcurrentSync() {
+	if len(b.blocks) > 1000 {
+		logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", len(b.blocks))
+		time.Sleep(MapSleepTime)
+	}
 	var wg sync.WaitGroup
 	for i := 0; i < b.config.ConcurrencyLimit; i++ {
 		wg.Add(1)
@@ -239,15 +244,6 @@ func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.R
 		if err != nil {
 			return err
 		}
-		//logging.Logger.Infof("finalized bundle, bundle_name=%s, bucket_name=%s\n", bundleName, b.getBucketName())
-		//// init next bundle
-		//startBlockID := blockID + 1
-		//endBlockID := blockID + b.getCreateBundleInterval()
-		//b.bundleDetail = &curBundleDetail{
-		//	name:            types.GetBundleName(startBlockID, endBlockID),
-		//	startBlockID:    startBlockID,
-		//	finalizeBlockID: endBlockID,
-		//}
 	}
 
 	blockToSave, err := b.toBlock(block, blockID, bundleName)

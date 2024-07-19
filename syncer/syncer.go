@@ -31,7 +31,7 @@ const (
 
 	LoopSleepTime = 10 * time.Millisecond
 	WaitSleepTime = 100 * time.Millisecond
-	MapSleepTime  = 5 * time.Second
+	MapSleepTime  = 3 * time.Second
 	BSCPauseTime  = 3 * time.Second
 
 	ETHPauseTime         = 90 * time.Second
@@ -96,16 +96,16 @@ func NewBlockIndexer(
 }
 
 func (b *BlockIndexer) StartConcurrentSync() {
-	if len(b.blocks) > 1000 {
-		logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", len(b.blocks))
-		time.Sleep(MapSleepTime)
-	}
 	var wg sync.WaitGroup
 	for i := 0; i < b.config.ConcurrencyLimit; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for {
+				if len(b.blocks) > 1000 {
+					logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", len(b.blocks))
+					time.Sleep(MapSleepTime)
+				}
 				var blockID uint64
 				b.blockHeightLock.Lock()
 				blockID = b.indexBlockHeight
@@ -121,7 +121,7 @@ func (b *BlockIndexer) StartConcurrentSync() {
 					}
 					break
 				}
-				logging.Logger.Infof("Successfully fetched and incremented block ID to %d", blockID)
+				logging.Logger.Infof("Successfully fetched and incremented block ID to %d, Map size:%d", blockID, len(b.blocks))
 			}
 		}()
 	}
@@ -133,12 +133,12 @@ func (b *BlockIndexer) StartLoop() {
 		// nextBlockID defines the block number (BSC)
 		var nextBlockID uint64
 		var err error
-		for retries := 0; retries < DBRetryTimes; retries++ {
+		for {
 			nextBlockID, err = b.getNextBlockNum()
 			if err == nil {
 				break
 			}
-			logging.Logger.Errorf("Failed to get next block number: %v. Retrying... (%d/3)", err, retries+1)
+			logging.Logger.Errorf("Failed to get next block number: %v.", err)
 			time.Sleep(time.Second * 2) // Wait for 2 seconds before retrying
 		}
 		if err != nil {

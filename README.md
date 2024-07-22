@@ -2,8 +2,6 @@
 
 ## Description
 
-![Greenfield BSC Archiver Interface](https://github.com/user-attachments/assets/7804fded-a5b4-49d8-a4fc-5c4161d7c161)
-
 The Greenfield BSC Archiver is tasked with storing headers and bodies of BSC historical blocks. It uploads this block information to Greenfield via the bundle service. The components of this archiver include:
 
 ### Syncer
@@ -29,12 +27,12 @@ Provides RPC interfaces compatible with Ethereum calls. Variables are generated 
 request
 ```json
 {
-"method": "eth_getBlockByNumber",
-"params": [
-"0x2625A00"
-],
-"id": 100,
-"jsonrpc": "2.0"
+    "method": "eth_getBlockByNumber",
+    "params": [
+        "0x2625A00"
+    ],
+    "id": 100,
+    "jsonrpc": "2.0"
 }
 ```
 

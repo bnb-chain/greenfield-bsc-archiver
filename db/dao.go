@@ -160,7 +160,4 @@ func AutoMigrateDB(db *gorm.DB) {
 	if err = db.AutoMigrate(&Block{}); err != nil {
 		panic(err)
 	}
-	if err = db.Migrator().DropIndex(&Block{}, "idx_block_status"); err != nil {
-		panic(err)
-	}
 }

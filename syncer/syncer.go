@@ -102,7 +102,10 @@ func (b *BlockIndexer) StartConcurrentSync() {
 		go func() {
 			defer wg.Done()
 			for {
-				if len(b.blocks) > int(b.config.GetBlockSyncThreshold()) {
+				b.blocksLock.Lock()
+				mapSize := len(b.blocks)
+				b.blocksLock.Unlock()
+				if mapSize > int(b.config.GetBlockSyncThreshold()) {
 					logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", len(b.blocks))
 					time.Sleep(MapSleepTime)
 				}

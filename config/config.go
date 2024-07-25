@@ -25,6 +25,7 @@ type SyncerConfig struct {
 	BucketName                       string        `json:"bucket_name"`                          // BucketName is the identifier of bucket on Greenfield that store blob
 	StartBlock                       uint64        `json:"start_block"`                          // StartBlock is used to init the syncer which block synced from, only need to provide once.
 	CreateBundleBlockInterval        uint64        `json:"create_bundle_block_interval"`         // CreateBundleBlockInterval defines the number of block that syncer would assemble blobs and upload to bundle service
+	BlockSyncThreshold               uint          `json:"block_sync_threshold"`                 // BlockSyncThreshold  defines the maximum number of blocks allowed in the blocks map before pausing the block fetching process.
 	BundleServiceEndpoints           []string      `json:"bundle_service_endpoints"`             // BundleServiceEndpoints is a list of bundle service address
 	RPCAddrs                         []string      `json:"rpc_addrs"`                            // RPCAddrs ETH or BSC RPC addr
 	GnfdRpcAddr                      string        `json:"gnfd_rpc_addr"`                        // GnfdRpcAddr is the Greenfield RPC address
@@ -72,6 +73,13 @@ func (s *SyncerConfig) GetCreateBundleInterval() uint64 {
 		return DefaultCreateBundleSlotInterval
 	}
 	return s.CreateBundleBlockInterval
+}
+
+func (s *SyncerConfig) GetBlockSyncThreshold() uint {
+	if s.BlockSyncThreshold == 0 {
+		return DefaultBlockSyncThreshold
+	}
+	return s.BlockSyncThreshold
 }
 
 func (s *SyncerConfig) GetReUploadBundleThresh() int64 {

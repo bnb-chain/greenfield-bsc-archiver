@@ -14,39 +14,6 @@ import (
 	"greeenfield-bsc-archiver/restapi/operations/block"
 )
 
-func HandleGetBundledBlockByNumber() func(params block.GetBundledBlockByNumberParams) middleware.Responder {
-	return func(params block.GetBundledBlockByNumberParams) middleware.Responder {
-		rpcRequest := params.Body
-		if rpcRequest.Params == nil {
-			return block.NewGetBundledBlockByNumberOK().WithPayload(
-				&models.GetBundledBlockByNumberRPCResponse{
-					ID:      rpcRequest.ID,
-					Jsonrpc: rpcRequest.Jsonrpc,
-					Error: &models.RPCError{
-						Code:    -32600,
-						Message: "Invalid request",
-					},
-				},
-			)
-		}
-
-		switch rpcRequest.Method {
-
-		default:
-			return block.NewGetBundledBlockByNumberOK().WithPayload(
-				&models.GetBundledBlockByNumberRPCResponse{
-					ID:      rpcRequest.ID,
-					Jsonrpc: rpcRequest.Jsonrpc,
-					Error: &models.RPCError{
-						Code:    -32601,
-						Message: "method not supported",
-					},
-				},
-			)
-		}
-	}
-}
-
 func HandleGetBundleNameByBlockNumber() func(params block.GetBundleNameByBlockNumberParams) middleware.Responder {
 	return func(params block.GetBundleNameByBlockNumberParams) middleware.Responder {
 		blockID := params.BlockNumber

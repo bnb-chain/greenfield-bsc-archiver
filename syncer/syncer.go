@@ -102,7 +102,7 @@ func (b *BlockIndexer) StartConcurrentSync() {
 		go func() {
 			defer wg.Done()
 			for {
-				if len(b.blocks) > 1000 {
+				if len(b.blocks) > int(b.config.GetBlockSyncThreshold()) {
 					logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", len(b.blocks))
 					time.Sleep(MapSleepTime)
 				}
@@ -141,9 +141,6 @@ func (b *BlockIndexer) StartLoop() {
 			logging.Logger.Errorf("Failed to get next block number: %v.", err)
 			time.Sleep(time.Second * 2) // Wait for 2 seconds before retrying
 		}
-		if err != nil {
-			panic(err)
-		}
 		b.processorBlockHeight = nextBlockID
 		b.indexBlockHeight = nextBlockID
 		err = b.LoadProgressAndResume(nextBlockID)
@@ -164,7 +161,9 @@ func (b *BlockIndexer) StartLoop() {
 			b.blocksLock.Unlock()
 			for !exists {
 				time.Sleep(WaitSleepTime)
+				b.blocksLock.Lock()
 				block, exists = b.blocks[blockID]
+				b.blocksLock.Unlock()
 			}
 			b.blocksLock.Lock()
 			delete(b.blocks, blockID)

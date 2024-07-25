@@ -22,7 +22,8 @@ Provides RPC interfaces compatible with Ethereum calls. Variables are generated 
 5. /bsc/v1/blocks/{block_id}/bundle/name
 
 ### Example
-
+Method: POST
+URL: https://gnfd-bsc-archiver-testnet.bnbchain.org/
 **eth_getBlockByNumber**
 request
 ```json
@@ -78,120 +79,6 @@ response
                 "transactionIndex": "0x0",
                 "type": "0x0",
                 "v": "0x93",
-                "value": "0x0"
-            },
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0x8ea486df4eafaf713fbbe3b4b0b4196e50fbd1ea93daf66675accf3bf3f59d00",
-                "input": "0xe1c7392a",
-                "nonce": "0x1",
-                "r": "0xd6541593c8d1bce8024f2bccfa6f73fc3a107f08e02b39a4571a027863558b3b",
-                "s": "0x3448e68c416c115137e9cd1b04a9a09e10a53eadd958d9606962b4170ffffbe7",
-                "to": "0x0000000000000000000000000000000000001001",
-                "transactionIndex": "0x1",
-                "type": "0x0",
-                "v": "0x93",
-                "value": "0x0"
-            },
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0x9ebc5237eabb339a103a34daf280db3d9498142b49fa47f1af71f64a605acffa",
-                "input": "0xe1c7392a",
-                "nonce": "0x2",
-                "r": "0x151f5a54ed865ed852eafe84be6557c13c6d23535ff0ec212e043f48ba5c275d",
-                "s": "0x17fa5ca73322133191df498ecb7a9b7fa57a81c403312704314716d81666f848",
-                "to": "0x0000000000000000000000000000000000001003",
-                "transactionIndex": "0x2",
-                "type": "0x0",
-                "v": "0x93",
-                "value": "0x0"
-            },
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0xc043c5d33f8c3a6d6c0853ff8cbe88ebdf746f8092cb763b18de65db45246a6e",
-                "input": "0xe1c7392a",
-                "nonce": "0x3",
-                "r": "0xf1d2414ecd63f567980be648645197d8a0d940921e6e8cde82f9da0ba7259be",
-                "s": "0x5add78f836ad168f37cf8fe38432ca01c7827ffbccb8b1981b151f4463651b90",
-                "to": "0x0000000000000000000000000000000000001006",
-                "transactionIndex": "0x3",
-                "type": "0x0",
-                "v": "0x94",
-                "value": "0x0"
-            },
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0x2f64d7e926e6fb62f906e18258097af179c213f0c87a717476cce1b334049797",
-                "input": "0xe1c7392a",
-                "nonce": "0x4",
-                "r": "0x51c8f79cbe3eabe7b8c90fff02b6186c26a31681acea887557450916eaf7b67b",
-                "s": "0x63d36286391f2976842e9f541a0ab07aa7e662b79b420f78e59a1e9a487658c9",
-                "to": "0x0000000000000000000000000000000000001004",
-                "transactionIndex": "0x4",
-                "type": "0x0",
-                "v": "0x93",
-                "value": "0x0"
-            },
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0x463f0a179a89f47b055df14897dd7c55a2d819351568045dcb0496f2875c71ee",
-                "input": "0xe1c7392a",
-                "nonce": "0x5",
-                "r": "0x36ffe2a7b51ea50b94dc75e02171e494e1e876902371586f24708a8c8ddb1b1b",
-                "s": "0x3164d01a18795962b3a317dfec2ed4393dc0a6c34a2dc2bbb0a986d348f134df",
-                "to": "0x0000000000000000000000000000000000001005",
-                "transactionIndex": "0x5",
-                "type": "0x0",
-                "v": "0x93",
-                "value": "0x0"
-            },
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0xc02fd5fc71fe8bdc4fec3f97a019a4dc9961eb95e5251c55fcb3da76f5cb5bca",
-                "input": "0xe1c7392a",
-                "nonce": "0x6",
-                "r": "0x410b03142901b97ff5c61ed962de42f2aa052799eb1d196a7c1a2aca839e012a",
-                "s": "0x599d8118ea6c2bbfe6a2338d21b46667b6ebd7d698221c8c3c580b59f3d49a06",
-                "to": "0x0000000000000000000000000000000000002000",
-                "transactionIndex": "0x6",
-                "type": "0x0",
-                "v": "0x94",
                 "value": "0x0"
             }
         ],
@@ -288,13 +175,13 @@ After above steps are done, you can start running the Greenfield BSC Archiver.
 make build
 ```
 
-### Build blob syncer
+### Build Archiver syncer
 
 ```shell
 make build_syncer
 ```
 
-### Build Blob Hub api server
+### Build Archiver api server
 
 ```shell
 make build_server

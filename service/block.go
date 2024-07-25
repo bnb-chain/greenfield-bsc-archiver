@@ -90,7 +90,7 @@ func (b BlockService) GetLatestBlockNumber() (uint64, error) {
 }
 
 func (b BlockService) GetLatestVerifiedBlockNumber() (uint64, error) {
-	block, err := b.blockDB.GetEarliestVerifiedBlock()
+	block, err := b.blockDB.GetLatestVerifiedBlock()
 	if err != nil {
 		return 0, err
 	}

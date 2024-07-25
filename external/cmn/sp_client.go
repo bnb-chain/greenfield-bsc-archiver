@@ -86,11 +86,6 @@ func (c *SPClient) GetBundleObject(ctx context.Context, bucketName, objectName s
 }
 
 func (c *SPClient) GetBundleBlocks(ctx context.Context, bucketName, objectName string) ([]*models.Block, error) {
-	startTime := time.Now()
-	defer func() {
-		duration := time.Since(startTime)
-		fmt.Printf("GetBundleBlocks took %s\n", duration)
-	}()
 	var urlStr string
 	parts := strings.Split(c.host, "//")
 	urlStr = parts[0] + "//" + bucketName + "." + parts[1] + "/" + objectName

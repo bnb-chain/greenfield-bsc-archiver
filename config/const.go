@@ -12,6 +12,8 @@ const (
 
 	DefaultCreateBundleSlotInterval = 2500 // around 10MB
 
+	DefaultBlockSyncThreshold = 1000
+
 	DefaultReUploadBundleThreshold = 3600 // in second
 
 	DefaultConcurrencyLimit = 5

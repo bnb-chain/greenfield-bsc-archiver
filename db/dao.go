@@ -26,7 +26,7 @@ type BlockDB interface {
 	GetBlockByRoot(root string) (*Block, error)
 	GetLatestProcessedBlock() (*Block, error)
 	GetEarliestUnverifiedBlock() (*Block, error)
-	GetEarliestVerifiedBlock() (*Block, error)
+	GetLatestVerifiedBlock() (*Block, error)
 	UpdateBlockStatus(block uint64, status Status) error
 	UpdateBlocksStatus(startBlock, endBlock uint64, status Status) error
 	SaveBlock(block *Block) error
@@ -77,7 +77,7 @@ func (d *BlockSvcDB) GetEarliestUnverifiedBlock() (*Block, error) {
 	return &block, nil
 }
 
-func (d *BlockSvcDB) GetEarliestVerifiedBlock() (*Block, error) {
+func (d *BlockSvcDB) GetLatestVerifiedBlock() (*Block, error) {
 	block := Block{}
 	err := d.db.Model(Block{}).Where("status = ?", Verified).Order("block_number desc").Take(&block).Error
 	if err != nil {

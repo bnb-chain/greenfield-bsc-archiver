@@ -49,7 +49,6 @@ func configureAPI(api *operations.GreeenfieldBscArchiverAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.BlockGetBundledBlockByNumberHandler = block.GetBundledBlockByNumberHandlerFunc(handlers.HandleGetBundledBlockByNumber())
 	api.BlockGetBlockByNumberHandler = block.GetBlockByNumberHandlerFunc(handlers.HandleGetBlockByNumber())
 	api.BlockGetBundleNameByBlockNumberHandler = block.GetBundleNameByBlockNumberHandlerFunc(handlers.HandleGetBundleNameByBlockNumber())
 

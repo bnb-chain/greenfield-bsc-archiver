@@ -103,5 +103,9 @@ func (b BlockService) GetBundleNameByBlockID(blockNumber uint64) (string, error)
 		return "", err
 	}
 
+	if block.Status != db.Verified {
+		return "", ErrorUnVerifiedBlock
+	}
+
 	return block.BundleName, nil
 }

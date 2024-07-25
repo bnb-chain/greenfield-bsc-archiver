@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-openapi/runtime/middleware"
+	"gorm.io/gorm"
 	"greeenfield-bsc-archiver/models"
 	"greeenfield-bsc-archiver/service"
 	"greeenfield-bsc-archiver/types"
@@ -23,6 +25,9 @@ func HandleGetBundleNameByBlockNumber() func(params block.GetBundleNameByBlockNu
 		}
 		name, err := service.BlockSvc.GetBundleNameByBlockID(blockNum)
 		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, service.ErrorUnVerifiedBlock) {
+				return block.NewGetBundleNameByBlockNumberNotFound().WithPayload(service.NotFoundErrorWithError(err))
+			}
 			return block.NewGetBundleNameByBlockNumberInternalServerError().WithPayload(service.InternalErrorWithError(err))
 		}
 

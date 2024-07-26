@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -106,7 +107,7 @@ func (b *BlockIndexer) StartConcurrentSync() {
 				mapSize := len(b.blocks)
 				b.blocksLock.Unlock()
 				if mapSize > int(b.config.GetBlockSyncThreshold()) {
-					logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", len(b.blocks))
+					logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", mapSize)
 					time.Sleep(MapSleepTime)
 				}
 				var blockID uint64
@@ -124,7 +125,7 @@ func (b *BlockIndexer) StartConcurrentSync() {
 					}
 					break
 				}
-				logging.Logger.Infof("Successfully fetched and incremented block ID to %d, Map size:%d", blockID, len(b.blocks))
+				logging.Logger.Infof("Successfully fetched and incremented block ID to %d, Map size:%d", blockID, mapSize)
 			}
 		}()
 	}
@@ -209,9 +210,10 @@ func (b *BlockIndexer) sync(blockID uint64) error {
 	if err != nil {
 		return err
 	}
+
 	if int64(blockID) >= int64(finalizedBlockNum) {
 		time.Sleep(BSCPauseTime)
-		return nil
+		return errors.New("block is not ready")
 	}
 
 	ctx, cancel = context.WithTimeout(context.Background(), RPCTimeout)

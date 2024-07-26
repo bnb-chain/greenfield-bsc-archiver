@@ -107,7 +107,7 @@ func (b *BlockIndexer) StartConcurrentSync() {
 				mapSize := len(b.blocks)
 				b.blocksLock.Unlock()
 				if mapSize > int(b.config.GetBlockSyncThreshold()) {
-					logging.Logger.Infof("Map size:%d exceeds 1000. Pausing for a while before starting workers.", mapSize)
+					logging.Logger.Infof("Map size:%d exceeds block sync threshold. Pausing for a while before starting workers.", mapSize)
 					time.Sleep(MapSleepTime)
 				}
 				var blockID uint64

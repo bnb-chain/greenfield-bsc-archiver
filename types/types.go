@@ -208,9 +208,9 @@ func BuildBlock(block *RpcBlock) *models.Block {
 		}
 	}
 
-	var withdrawals []*models.Withdrawal
+	withdrawals := make([]*models.Withdrawal, 0)
 	if block.Withdrawals != nil {
-		withdrawals := make([]*models.Withdrawal, len(*block.Withdrawals))
+		withdrawals = make([]*models.Withdrawal, len(*block.Withdrawals))
 		for i, withdrawal := range *block.Withdrawals {
 			withdrawals[i] = &models.Withdrawal{
 				Index:     util.Uint64ToHex(withdrawal.Index),

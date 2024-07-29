@@ -84,7 +84,17 @@ func (b *BlockIndexer) verify() error {
 		// the bundle is not sealed yet
 		if bundleInfo.Status == BundleStatusFinalized || bundleInfo.Status == BundleStatusCreatedOnChain {
 			if bundle.CreatedTime > 0 && time.Now().Unix()-bundle.CreatedTime > b.config.GetReUploadBundleThresh() {
-				logging.Logger.Infof("the bundle %s is not sealed and exceed the re-upload threshold %d ", bundleName, b.config.GetReUploadBundleThresh())
+				logging.Logger.Infof("the bundle %s is not sealed(status: %d) and exceed the re-upload threshold %d ", bundleName, bundleInfo.Status, b.config.GetReUploadBundleThresh())
+				objectMeta, err := b.chainClient.GetObjectMeta(context.Background(), b.getBucketName(), bundleName)
+				if err != nil {
+					logging.Logger.Errorf("failed to get object meta from chain, bundleName=%s", bundleName)
+					return err
+				}
+				// check the object info from chain to make sure it is not be sealed
+				// if it is not be sealed, re-upload it
+				if objectMeta.ObjectStatus == "OBJECT_STATUS_SEALED" {
+					return nil
+				}
 				return b.reUploadBundle(bundleName)
 			}
 			return nil

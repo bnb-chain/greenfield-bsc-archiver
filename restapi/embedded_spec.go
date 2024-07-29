@@ -23,11 +23,11 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "API for handling blob query in the Blob Hub.",
-    "title": "Blob Hub Service API",
+    "description": "API for handling block query in the Greenfield BSC Archiver.",
+    "title": "Greenfield BSC Archiver Service API",
     "version": "1.0.0"
   },
-  "host": "blob-hub",
+  "host": "greenfield-bsc-archiver",
   "paths": {
     "/": {
       "post": {
@@ -35,10 +35,10 @@ func init() {
           "application/json"
         ],
         "tags": [
-          "blob"
+          "block"
         ],
-        "summary": "Get BSC blob sidecars by block num",
-        "operationId": "getBSCBlobSidecarsByBlockNum",
+        "summary": "Returns information of the block matching the given block number.",
+        "operationId": "getBlockByNumber",
         "parameters": [
           {
             "name": "body",
@@ -53,7 +53,7 @@ func init() {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/RPCResponse"
+              "$ref": "#/definitions/GetBlockByNumberRPCResponse"
             }
           },
           "500": {
@@ -65,40 +65,67 @@ func init() {
         }
       }
     },
-    "/eth/v1/beacon/blob_sidecars/{block_id}": {
-      "get": {
+    "//": {
+      "post": {
         "produces": [
           "application/json"
         ],
         "tags": [
-          "blob"
+          "block"
         ],
-        "summary": "Get blob sidecars by block num",
-        "operationId": "getBlobSidecarsByBlockNum",
+        "summary": "Returns information of the block matching the given block number.",
+        "operationId": "getBlockByNumberSimplified",
         "parameters": [
           {
-            "minLength": 1,
-            "type": "string",
-            "description": "Block identifier. Can be one of: 'head' (canonical head in node's view), 'genesis', 'finalized', \u003cslot\u003e, \u003chex encoded blockRoot with 0x prefix\u003e",
-            "name": "block_id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of indices for blob sidecars to request for in the specified block. Returns all blob sidecars in the block if not specified",
-            "name": "indices",
-            "in": "query"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/GetBlobSideCarsResponse"
+              "$ref": "#/definitions/GetBlockByNumberSimplifiedRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bsc/v1/blocks/{block_number}/bundle/name": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Get bundle name by block number",
+        "operationId": "getBundleNameByBlockNumber",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "string",
+            "description": "Block identifier. Can be one of: 'head' (canonical head in node's view), 'genesis', 'finalized', \u003cslot\u003e, \u003chex encoded blockRoot with 0x prefix\u003e",
+            "name": "block_number",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBundleNameByBlockNumberRPCResponse"
             }
           },
           "400": {
@@ -121,52 +148,117 @@ func init() {
           }
         }
       }
+    },
+    "/eth_blockNumber": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns the latest block number of the blockchain",
+        "operationId": "getBlockNumber",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBlockNumberRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/eth_getBlockByHash": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns information of the block matching the given block hash",
+        "operationId": "getBlockByHash",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBlockByHashRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/eth_getBundledBlockByNumber": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns information of the block bundle matching the given block number.",
+        "operationId": "getBundledBlockByNumber",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBundledBlockByNumberRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
-    "BSCBlobSidecar": {
-      "type": "object",
-      "properties": {
-        "blobs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "commitments": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "proofs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "BSCBlobTxSidecar": {
-      "type": "object",
-      "properties": {
-        "blobSidecar": {
-          "$ref": "#/definitions/BSCBlobSidecar"
-        },
-        "blockHash": {
-          "type": "string"
-        },
-        "blockNumber": {
-          "type": "string"
-        },
-        "txHash": {
-          "type": "string"
-        },
-        "txIndex": {
-          "type": "string"
-        }
-      }
-    },
     "Error": {
       "type": "object",
       "properties": {
@@ -185,25 +277,125 @@ func init() {
         }
       }
     },
-    "GetBlobSideCarsResponse": {
+    "GetBlockByHashRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/block"
+        }
+      }
+    },
+    "GetBlockByNumberRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/block"
+        }
+      }
+    },
+    "GetBlockByNumberSimplifiedRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/simplifiedBlock"
+        }
+      }
+    },
+    "GetBlockNumberRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "string",
+          "example": "0x1"
+        }
+      }
+    },
+    "GetBundleNameByBlockNumberRPCResponse": {
       "type": "object",
       "properties": {
         "code": {
           "description": "status code",
-          "type": "integer",
+          "type": "string",
           "example": 200
         },
         "data": {
           "description": "actual data for request",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Sidecar"
-          }
+          "type": "string",
+          "example": 1
         },
         "message": {
           "description": "error message if there is error",
           "type": "string",
           "example": "signature invalid"
+        }
+      }
+    },
+    "GetBundledBlockByNumberRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/block"
+          }
         }
       }
     },
@@ -238,7 +430,7 @@ func init() {
         },
         "method": {
           "type": "string",
-          "example": "eth_getBlobSidecars"
+          "example": "eth_getBlockByNumber"
         },
         "params": {
           "type": "array",
@@ -252,86 +444,485 @@ func init() {
         }
       }
     },
-    "RPCResponse": {
+    "accessList": {
       "type": "object",
       "properties": {
-        "error": {
-          "$ref": "#/definitions/RPCError"
-        },
-        "id": {
-          "type": "integer",
-          "example": 1
-        },
-        "jsonrpc": {
+        "address": {
           "type": "string",
-          "example": "2.0"
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "result": {
+        "storageKeys": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/BSCBlobTxSidecar"
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
           }
         }
       }
     },
-    "Sidecar": {
+    "accessTuple": {
       "type": "object",
       "properties": {
-        "blob": {
-          "type": "string"
-        },
-        "index": {
+        "address": {
           "type": "string",
-          "example": 1
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "kzg_commitment": {
-          "type": "string"
+        "storageKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
+        }
+      }
+    },
+    "block": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
         },
-        "kzg_commitment_inclusion_proof": {
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/transaction"
+          }
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "simplifiedBlock": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
+        },
+        "transactions": {
           "type": "array",
           "items": {
             "type": "string"
-          },
-          "x-omitempty": true
-        },
-        "kzg_proof": {
-          "type": "string"
-        },
-        "signed_block_header": {
-          "type": "object",
-          "properties": {
-            "message": {
-              "type": "object",
-              "properties": {
-                "body_root": {
-                  "type": "string"
-                },
-                "parent_root": {
-                  "type": "string"
-                },
-                "proposer_index": {
-                  "type": "string"
-                },
-                "slot": {
-                  "type": "string"
-                },
-                "state_root": {
-                  "type": "string"
-                }
-              }
-            },
-            "signature": {
-              "type": "string"
-            }
           }
         },
-        "tx_hash": {
-          "type": "string"
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
         },
-        "tx_index": {
-          "type": "integer",
-          "format": "int64",
-          "x-omitempty": true
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "transaction": {
+      "type": "object",
+      "properties": {
+        "accessList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/accessTuple"
+          },
+          "x-nullable": true
+        },
+        "blockHash": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1d59179991e4b016d5fcf4aba59db622f064e654a82714e468c07f9f54efebd2"
+        },
+        "blockNumber": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x280468f"
+        },
+        "chainId": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x61"
+        },
+        "from": {
+          "type": "string",
+          "example": "0x5478b551e1c42e56417c44245f10b20e3b6347e8"
+        },
+        "gas": {
+          "type": "string",
+          "example": "0x7a1200"
+        },
+        "gasPrice": {
+          "type": "string",
+          "example": "0x12a05f200"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x5f5def5f5f9352d8a421c692bd51541c308b4a14c8044a2680cb6db811caf2d5"
+        },
+        "input": {
+          "type": "string",
+          "example": "0xb1dc65a400011eab462cabbd1f14fd9ab59a179156b71ed2c40dcab009bf2d870d27f157000000000000000000000000000000000000000000000000000000000067fd016d69030d5cb1244dc8531787cfc96f83b6d77c347e8796b1d1ca94a36a4c2f6a00000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000030000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000004b200000000000000000000000000000000000000000000000000000000000004b212e0e50632d2b5f1313dcf8c2c9b3044e7c7424bc94860d72f72174c2122bf618000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000067a474c11eb16492411f76cd717570c10d39a82cea3568e35a2f3b9d8655f55494e5576f4f3353b92361631f467db0bfae0fcf3fe199eef274da5bad572cedb3805fbf1ba1c001c2dcaa3a766bd2f928fe08e21dfd02715c94d615967be3e2a36c5021530db5c349bdfec118a6b3852701d540b18bb952b3905645e20bff695582e588e165d749f45965598e42181ffe0a9bbdad13d3ce057be0e5bacc2c61bfc4148087e4c0213d3ecfb2bbd9b9d65f7d3d3d980da0dc5f97080b961920c525100000000000000000000000000000000000000000000000000000000000000066ac29d0520e21a66d420d19f168bc5208ab5fbbbbc6809f03cc68fc0769f65d76b20724971f4583c1ec159edc32f155f46f73eedb5f92f48f3af9076e1eaca6142f1777b92084cad4181b49db98f8e0bd1a8e622136ff2fdcd6137f25bb778f7372556fb34027f9b874820e13a19317b14ec67201d927d77984cdceecd7258356cdff274059a08beacf77f4afc63234b30b9bf83daa8ede3e44e53d4dec586ab21bbd5281d1a220224d1cf963912d45447e039f4e6d4c45f0ad0c37f5fde20de"
+        },
+        "maxFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "maxPriorityFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0xc004"
+        },
+        "r": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "s": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "to": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0xac24299a91b72d1cb5b31147e3cf54964d896974"
+        },
+        "transactionIndex": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x0"
+        },
+        "type": {
+          "type": "string",
+          "example": "0x0"
+        },
+        "v": {
+          "type": "string",
+          "example": "0xe5"
+        },
+        "value": {
+          "type": "string",
+          "example": "0x0"
+        }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "amount": {
+          "type": "string",
+          "example": "1000000"
+        },
+        "index": {
+          "type": "string",
+          "example": "1"
+        },
+        "validator": {
+          "type": "string",
+          "example": "12345"
         }
       }
     }
@@ -343,11 +934,11 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "API for handling blob query in the Blob Hub.",
-    "title": "Blob Hub Service API",
+    "description": "API for handling block query in the Greenfield BSC Archiver.",
+    "title": "Greenfield BSC Archiver Service API",
     "version": "1.0.0"
   },
-  "host": "blob-hub",
+  "host": "greenfield-bsc-archiver",
   "paths": {
     "/": {
       "post": {
@@ -355,10 +946,10 @@ func init() {
           "application/json"
         ],
         "tags": [
-          "blob"
+          "block"
         ],
-        "summary": "Get BSC blob sidecars by block num",
-        "operationId": "getBSCBlobSidecarsByBlockNum",
+        "summary": "Returns information of the block matching the given block number.",
+        "operationId": "getBlockByNumber",
         "parameters": [
           {
             "name": "body",
@@ -373,7 +964,7 @@ func init() {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/RPCResponse"
+              "$ref": "#/definitions/GetBlockByNumberRPCResponse"
             }
           },
           "500": {
@@ -385,40 +976,67 @@ func init() {
         }
       }
     },
-    "/eth/v1/beacon/blob_sidecars/{block_id}": {
-      "get": {
+    "//": {
+      "post": {
         "produces": [
           "application/json"
         ],
         "tags": [
-          "blob"
+          "block"
         ],
-        "summary": "Get blob sidecars by block num",
-        "operationId": "getBlobSidecarsByBlockNum",
+        "summary": "Returns information of the block matching the given block number.",
+        "operationId": "getBlockByNumberSimplified",
         "parameters": [
           {
-            "minLength": 1,
-            "type": "string",
-            "description": "Block identifier. Can be one of: 'head' (canonical head in node's view), 'genesis', 'finalized', \u003cslot\u003e, \u003chex encoded blockRoot with 0x prefix\u003e",
-            "name": "block_id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of indices for blob sidecars to request for in the specified block. Returns all blob sidecars in the block if not specified",
-            "name": "indices",
-            "in": "query"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/GetBlobSideCarsResponse"
+              "$ref": "#/definitions/GetBlockByNumberSimplifiedRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bsc/v1/blocks/{block_number}/bundle/name": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Get bundle name by block number",
+        "operationId": "getBundleNameByBlockNumber",
+        "parameters": [
+          {
+            "minLength": 1,
+            "type": "string",
+            "description": "Block identifier. Can be one of: 'head' (canonical head in node's view), 'genesis', 'finalized', \u003cslot\u003e, \u003chex encoded blockRoot with 0x prefix\u003e",
+            "name": "block_number",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBundleNameByBlockNumberRPCResponse"
             }
           },
           "400": {
@@ -441,52 +1059,117 @@ func init() {
           }
         }
       }
+    },
+    "/eth_blockNumber": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns the latest block number of the blockchain",
+        "operationId": "getBlockNumber",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBlockNumberRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/eth_getBlockByHash": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns information of the block matching the given block hash",
+        "operationId": "getBlockByHash",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBlockByHashRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/eth_getBundledBlockByNumber": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "block"
+        ],
+        "summary": "Returns information of the block bundle matching the given block number.",
+        "operationId": "getBundledBlockByNumber",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RPCRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetBundledBlockByNumberRPCResponse"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
-    "BSCBlobSidecar": {
-      "type": "object",
-      "properties": {
-        "blobs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "commitments": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "proofs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "BSCBlobTxSidecar": {
-      "type": "object",
-      "properties": {
-        "blobSidecar": {
-          "$ref": "#/definitions/BSCBlobSidecar"
-        },
-        "blockHash": {
-          "type": "string"
-        },
-        "blockNumber": {
-          "type": "string"
-        },
-        "txHash": {
-          "type": "string"
-        },
-        "txIndex": {
-          "type": "string"
-        }
-      }
-    },
     "Error": {
       "type": "object",
       "properties": {
@@ -505,25 +1188,125 @@ func init() {
         }
       }
     },
-    "GetBlobSideCarsResponse": {
+    "GetBlockByHashRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/block"
+        }
+      }
+    },
+    "GetBlockByNumberRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/block"
+        }
+      }
+    },
+    "GetBlockByNumberSimplifiedRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "object",
+          "$ref": "#/definitions/simplifiedBlock"
+        }
+      }
+    },
+    "GetBlockNumberRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "string",
+          "example": "0x1"
+        }
+      }
+    },
+    "GetBundleNameByBlockNumberRPCResponse": {
       "type": "object",
       "properties": {
         "code": {
           "description": "status code",
-          "type": "integer",
+          "type": "string",
           "example": 200
         },
         "data": {
           "description": "actual data for request",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Sidecar"
-          }
+          "type": "string",
+          "example": 1
         },
         "message": {
           "description": "error message if there is error",
           "type": "string",
           "example": "signature invalid"
+        }
+      }
+    },
+    "GetBundledBlockByNumberRPCResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/RPCError"
+        },
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "jsonrpc": {
+          "type": "string",
+          "example": "2.0"
+        },
+        "result": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/block"
+          }
         }
       }
     },
@@ -558,7 +1341,7 @@ func init() {
         },
         "method": {
           "type": "string",
-          "example": "eth_getBlobSidecars"
+          "example": "eth_getBlockByNumber"
         },
         "params": {
           "type": "array",
@@ -572,134 +1355,485 @@ func init() {
         }
       }
     },
-    "RPCResponse": {
+    "accessList": {
       "type": "object",
       "properties": {
-        "error": {
-          "$ref": "#/definitions/RPCError"
-        },
-        "id": {
-          "type": "integer",
-          "example": 1
-        },
-        "jsonrpc": {
+        "address": {
           "type": "string",
-          "example": "2.0"
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "result": {
+        "storageKeys": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/BSCBlobTxSidecar"
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
           }
         }
       }
     },
-    "Sidecar": {
+    "accessTuple": {
       "type": "object",
       "properties": {
-        "blob": {
-          "type": "string"
-        },
-        "index": {
+        "address": {
           "type": "string",
-          "example": 1
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "kzg_commitment": {
-          "type": "string"
+        "storageKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
+        }
+      }
+    },
+    "block": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
         },
-        "kzg_commitment_inclusion_proof": {
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/transaction"
+          }
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "simplifiedBlock": {
+      "type": "object",
+      "properties": {
+        "baseFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000000000"
+        },
+        "blobGasUsed": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "1000"
+        },
+        "difficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x186a1"
+        },
+        "excessBlobGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "500"
+        },
+        "extraData": {
+          "type": "string",
+          "example": "0x123456"
+        },
+        "gasLimit": {
+          "type": "string",
+          "example": "8000000"
+        },
+        "gasUsed": {
+          "type": "string",
+          "example": "21000"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x3757a8cc692ec0ffe09c93d147e690fbc2dd8e2a94ca94050059adb6e9b7b1fc"
+        },
+        "logsBloom": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "miner": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
+        },
+        "mixHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0x0000000000000042"
+        },
+        "number": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "100000"
+        },
+        "parentBeaconBlockRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "parentHash": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "receiptsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "sha3Uncles": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "size": {
+          "type": "string",
+          "example": "0x176d20b"
+        },
+        "stateRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "timestamp": {
+          "type": "string",
+          "example": "0x5f4e5f87"
+        },
+        "totalDifficulty": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x176d20b"
+        },
+        "transactions": {
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "transactionsRoot": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        },
+        "uncles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "withdrawals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/withdrawal"
+          }
+        },
+        "withdrawalsRoot": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        }
+      }
+    },
+    "transaction": {
+      "type": "object",
+      "properties": {
+        "accessList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/accessTuple"
           },
-          "x-omitempty": true
+          "x-nullable": true
         },
-        "kzg_proof": {
-          "type": "string"
+        "blockHash": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x1d59179991e4b016d5fcf4aba59db622f064e654a82714e468c07f9f54efebd2"
         },
-        "signed_block_header": {
-          "type": "object",
-          "properties": {
-            "message": {
-              "type": "object",
-              "properties": {
-                "body_root": {
-                  "type": "string"
-                },
-                "parent_root": {
-                  "type": "string"
-                },
-                "proposer_index": {
-                  "type": "string"
-                },
-                "slot": {
-                  "type": "string"
-                },
-                "state_root": {
-                  "type": "string"
-                }
-              }
-            },
-            "signature": {
-              "type": "string"
-            }
-          }
+        "blockNumber": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x280468f"
         },
-        "tx_hash": {
-          "type": "string"
+        "chainId": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x61"
         },
-        "tx_index": {
-          "type": "integer",
-          "format": "int64",
-          "x-omitempty": true
+        "from": {
+          "type": "string",
+          "example": "0x5478b551e1c42e56417c44245f10b20e3b6347e8"
+        },
+        "gas": {
+          "type": "string",
+          "example": "0x7a1200"
+        },
+        "gasPrice": {
+          "type": "string",
+          "example": "0x12a05f200"
+        },
+        "hash": {
+          "type": "string",
+          "example": "0x5f5def5f5f9352d8a421c692bd51541c308b4a14c8044a2680cb6db811caf2d5"
+        },
+        "input": {
+          "type": "string",
+          "example": "0xb1dc65a400011eab462cabbd1f14fd9ab59a179156b71ed2c40dcab009bf2d870d27f157000000000000000000000000000000000000000000000000000000000067fd016d69030d5cb1244dc8531787cfc96f83b6d77c347e8796b1d1ca94a36a4c2f6a00000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000220000000000000000000000000000000000000000000000000000000000000030000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000004b200000000000000000000000000000000000000000000000000000000000004b212e0e50632d2b5f1313dcf8c2c9b3044e7c7424bc94860d72f72174c2122bf618000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000067a474c11eb16492411f76cd717570c10d39a82cea3568e35a2f3b9d8655f55494e5576f4f3353b92361631f467db0bfae0fcf3fe199eef274da5bad572cedb3805fbf1ba1c001c2dcaa3a766bd2f928fe08e21dfd02715c94d615967be3e2a36c5021530db5c349bdfec118a6b3852701d540b18bb952b3905645e20bff695582e588e165d749f45965598e42181ffe0a9bbdad13d3ce057be0e5bacc2c61bfc4148087e4c0213d3ecfb2bbd9b9d65f7d3d3d980da0dc5f97080b961920c525100000000000000000000000000000000000000000000000000000000000000066ac29d0520e21a66d420d19f168bc5208ab5fbbbbc6809f03cc68fc0769f65d76b20724971f4583c1ec159edc32f155f46f73eedb5f92f48f3af9076e1eaca6142f1777b92084cad4181b49db98f8e0bd1a8e622136ff2fdcd6137f25bb778f7372556fb34027f9b874820e13a19317b14ec67201d927d77984cdceecd7258356cdff274059a08beacf77f4afc63234b30b9bf83daa8ede3e44e53d4dec586ab21bbd5281d1a220224d1cf963912d45447e039f4e6d4c45f0ad0c37f5fde20de"
+        },
+        "maxFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "maxPriorityFeePerGas": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x12a05f200"
+        },
+        "nonce": {
+          "type": "string",
+          "example": "0xc004"
+        },
+        "r": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "s": {
+          "type": "string",
+          "example": "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+        },
+        "to": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0xac24299a91b72d1cb5b31147e3cf54964d896974"
+        },
+        "transactionIndex": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "0x0"
+        },
+        "type": {
+          "type": "string",
+          "example": "0x0"
+        },
+        "v": {
+          "type": "string",
+          "example": "0xe5"
+        },
+        "value": {
+          "type": "string",
+          "example": "0x0"
         }
       }
     },
-    "SidecarSignedBlockHeader": {
+    "withdrawal": {
       "type": "object",
       "properties": {
-        "message": {
-          "type": "object",
-          "properties": {
-            "body_root": {
-              "type": "string"
-            },
-            "parent_root": {
-              "type": "string"
-            },
-            "proposer_index": {
-              "type": "string"
-            },
-            "slot": {
-              "type": "string"
-            },
-            "state_root": {
-              "type": "string"
-            }
-          }
+        "address": {
+          "type": "string",
+          "example": "0x1234567890abcdef1234567890abcdef12345678"
         },
-        "signature": {
-          "type": "string"
-        }
-      }
-    },
-    "SidecarSignedBlockHeaderMessage": {
-      "type": "object",
-      "properties": {
-        "body_root": {
-          "type": "string"
+        "amount": {
+          "type": "string",
+          "example": "1000000"
         },
-        "parent_root": {
-          "type": "string"
+        "index": {
+          "type": "string",
+          "example": "1"
         },
-        "proposer_index": {
-          "type": "string"
-        },
-        "slot": {
-          "type": "string"
-        },
-        "state_root": {
-          "type": "string"
+        "validator": {
+          "type": "string",
+          "example": "12345"
         }
       }
     }

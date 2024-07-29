@@ -1,8 +1,8 @@
 VERSION=$(shell git describe --tags)
 GIT_COMMIT=$(shell git rev-parse HEAD)
 GIT_COMMIT_DATE=$(shell git log -n1 --pretty='format:%cd' --date=format:'%Y%m%d')
-REPO=github.com/bnb-chain/blob-hub
-IMAGE_NAME=ghcr.io/bnb-chain/blob-hub
+REPO=github.com/bnb-chain/greeenfield-bsc-archiver
+IMAGE_NAME=ghcr.io/bnb-chain/greeenfield-bsc-archiver
 
 ldflags = -X $(REPO)/version.AppVersion=$(VERSION) \
           -X $(REPO)/version.GitCommit=$(GIT_COMMIT) \
@@ -10,16 +10,16 @@ ldflags = -X $(REPO)/version.AppVersion=$(VERSION) \
 
 build_syncer:
 ifeq ($(OS),Windows_NT)
-	go build -o build/syncer.exe -ldflags="$(ldflags)" cmd/blob-hub-syncer/main.go
+	go build -o build/syncer.exe -ldflags="$(ldflags)" cmd/greeenfield-bsc-archiver-syncer/main.go
 else
-	go build -o build/syncer -ldflags="$(ldflags)" cmd/blob-hub-syncer/main.go
+	go build -o build/syncer -ldflags="$(ldflags)" cmd/greeenfield-bsc-archiver-syncer/main.go
 endif
 
 build_server:
 ifeq ($(OS),Windows_NT)
-	go build -o build/server.exe -ldflags="$(ldflags)" cmd/blob-hub-server/main.go
+	go build -o build/server.exe -ldflags="$(ldflags)" cmd/greeenfield-bsc-archiver-server/main.go
 else
-	go build -o build/server -ldflags="$(ldflags)" cmd/blob-hub-server/main.go
+	go build -o build/server -ldflags="$(ldflags)" cmd/greeenfield-bsc-archiver-server/main.go
 endif
 
 build:
@@ -27,8 +27,8 @@ build:
 	make build_server
 
 install:
-	go install cmd/archiver-server/main.go
-	go install cmd/archiver-syncer/main.go
+	go install cmd/greeenfield-bsc-archiver-server/main.go
+	go install cmd/greeenfield-bsc-archiver-syncer/main.go
 
 build_docker:
 	docker build . -t ${IMAGE_NAME}

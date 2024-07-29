@@ -26,7 +26,7 @@ type RPCRequest struct {
 	Jsonrpc string `json:"jsonrpc,omitempty"`
 
 	// method
-	// Example: eth_getBlobSidecars
+	// Example: eth_getBlockByNumber
 	Method string `json:"method,omitempty"`
 
 	// params

@@ -1,20 +1,21 @@
 {
   "chain": "BSC",
-  "bucket_name": "bsc-historical-blocks",
-  "start_slot_or_block": 40139900,
-  "create_bundle_slot_interval": 10,
+  "bucket_name": "yourbucketname",
+  "concurrency_limit": 4,
+  "block_sync_threshold": 1000,
+  "start_block": 0,
+  "enable_indiv_block_verification": false,
+  "create_bundle_block_interval": 100,
   "bundle_not_sealed_reupload_threshold": 600,
-  "beacon_rpc_addrs": [
-    "https://eth2-beacon-mainnet.nodereal.io"
-  ],
   "bundle_service_endpoints": [
     "https://gnfd-testnet-bundle.nodereal.io"
   ],
   "rpc_addrs": [
-    "https://bsc-mainnet.nodereal.io/v1/e52b23a60ebd4446811e455c9eb947ec"
+    "https://bsc-testnet.nodereal.io/v1/private_key"
   ],
+  "gnfd_rpc_addr": "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org",
   "temp_dir": "temp",
-  "private_key": "a6f2041aeca9a09159c937b77316c9c7e2c0f1c5b7241832f84bf1d37eb49661",
+  "private_key": "private_key",
   "db_config": {
     "dialect": "mysql",
     "username": "root",

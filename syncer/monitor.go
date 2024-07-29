@@ -8,13 +8,13 @@ import (
 	"greeenfield-bsc-archiver/metrics"
 )
 
-func (s *BlobSyncer) monitorQuota() {
-	if s.spClient == nil {
+func (b *BlockIndexer) monitorQuota() {
+	if b.spClient == nil {
 		return
 	}
 	monitorTicket := time.NewTicker(MonitorQuotaInterval)
 	for range monitorTicket.C {
-		quota, err := s.spClient.GetBucketReadQuota(context.Background(), s.getBucketName())
+		quota, err := b.spClient.GetBucketReadQuota(context.Background(), b.getBucketName())
 		if err != nil {
 			logging.Logger.Errorf("failed to get bucket info from SP, err=%s", err.Error())
 			continue

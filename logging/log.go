@@ -11,7 +11,7 @@ import (
 
 var (
 	// Logger instance for quick declarative logging levels
-	Logger = logging.MustGetLogger("blob-hub")
+	Logger = logging.MustGetLogger("greeenfield-bsc-archiver")
 	// log levels that are available
 	levels = map[string]logging.Level{
 		"CRITICAL": logging.CRITICAL,

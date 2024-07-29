@@ -1,10 +1,13 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 
 	"greeenfield-bsc-archiver/models"
 )
+
+var ErrorUnVerifiedBlock = errors.New("unverified block")
 
 // Verify Interface Compliance
 var _ error = (*Err)(nil)
@@ -36,6 +39,13 @@ func InternalErrorWithError(err error) *models.Error {
 func BadRequestWithError(err error) *models.Error {
 	return &models.Error{
 		Code:    400,
+		Message: err.Error(),
+	}
+}
+
+func NotFoundErrorWithError(err error) *models.Error {
+	return &models.Error{
+		Code:    404,
 		Message: err.Error(),
 	}
 }

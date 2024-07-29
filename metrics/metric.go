@@ -12,13 +12,13 @@ import (
 
 var (
 	SyncedBlockIDGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "synced_beacon_slot",
-		Help: "Synced slot number, all blobs have been uploaded to bundle service.",
+		Name: "synced_block_id",
+		Help: "Synced block id, all block info have been uploaded to bundle service.",
 	})
 
 	VerifiedBlockIDGauge = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "verified_beacon_slot",
-		Help: "Verified slot number, all blobs have been verified against the bundle service.",
+		Name: "verified_block_id",
+		Help: "Verified block id, all block info have been verified against the bundle service.",
 	})
 
 	BucketRemainingQuotaGauge = prometheus.NewGauge(prometheus.GaugeOpts{

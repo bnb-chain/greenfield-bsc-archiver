@@ -17,41 +17,37 @@ import (
 )
 
 const (
-	ETH = "ETH"
 	BSC = "BSC"
 )
 
 type SyncerConfig struct {
-	Chain                            string        `json:"chain"`                                // support ETH and BSC
+	Chain                            string        `json:"chain"`                                // support BSC
 	BucketName                       string        `json:"bucket_name"`                          // BucketName is the identifier of bucket on Greenfield that store blob
-	StartSlotOrBlock                 uint64        `json:"start_slot_or_block"`                  // StartSlotOrBlock is used to init the syncer which slot of beacon chain to synced from, only need to provide once.
+	StartBlock                       uint64        `json:"start_block"`                          // StartBlock is used to init the syncer which block synced from, only need to provide once.
 	CreateBundleBlockInterval        uint64        `json:"create_bundle_block_interval"`         // CreateBundleBlockInterval defines the number of block that syncer would assemble blobs and upload to bundle service
+	BlockSyncThreshold               uint          `json:"block_sync_threshold"`                 // BlockSyncThreshold  defines the maximum number of blocks allowed in the blocks map before pausing the block fetching process.
 	BundleServiceEndpoints           []string      `json:"bundle_service_endpoints"`             // BundleServiceEndpoints is a list of bundle service address
-	BeaconRPCAddrs                   []string      `json:"beacon_rpc_addrs"`                     // BeaconRPCAddrs is a list of beacon chain RPC address
 	RPCAddrs                         []string      `json:"rpc_addrs"`                            // RPCAddrs ETH or BSC RPC addr
+	GnfdRpcAddr                      string        `json:"gnfd_rpc_addr"`                        // GnfdRpcAddr is the Greenfield RPC address
 	TempDir                          string        `json:"temp_dir"`                             // TempDir is used to store blobs and created bundle
 	PrivateKey                       string        `json:"private_key"`                          // PrivateKey is the key of bucket owner, request to bundle service will be signed by it as well.
 	BundleNotSealedReuploadThreshold int64         `json:"bundle_not_sealed_reupload_threshold"` // BundleNotSealedReuploadThreshold for re-uploading a bundle if it cant be sealed within the time threshold.
+	EnableIndivBlockVerification     bool          `json:"enable_indiv_block_verification"`      // EnableIndivBlobVerification is used to enable individual block verification, otherwise only bundle level verification is performed.
 	DBConfig                         DBConfig      `json:"db_config"`
 	MetricsConfig                    MetricsConfig `json:"metrics_config"`
 	LogConfig                        LogConfig     `json:"log_config"`
+	ConcurrencyLimit                 int           `json:"concurrency_limit"`
 }
 
 func (s *SyncerConfig) Validate() {
-	if !strings.EqualFold(s.Chain, ETH) && !strings.EqualFold(s.Chain, BSC) {
+	if !strings.EqualFold(s.Chain, BSC) {
 		panic("chain not support")
 	}
 	if len(s.BucketName) == 0 {
 		panic("the Greenfield bucket name is not is not provided")
 	}
-	if s.StartSlotOrBlock == 0 {
-		panic("the start slot to sync slot is not provided")
-	}
 	if len(s.BundleServiceEndpoints) == 0 {
 		panic("BundleService endpoints should not be empty")
-	}
-	if s.Chain == ETH && len(s.BeaconRPCAddrs) == 0 {
-		panic("beacon rpc address should not be empty")
 	}
 	if len(s.RPCAddrs) == 0 {
 		panic("eth rpc address should not be empty")
@@ -62,8 +58,8 @@ func (s *SyncerConfig) Validate() {
 	if len(s.PrivateKey) == 0 {
 		panic("private key is not provided")
 	}
-	if s.Chain == BSC && s.CreateBundleBlockInterval > 200 {
-		panic("create_bundle_slot_interval is supposed to be less than 100")
+	if s.Chain == BSC && s.CreateBundleBlockInterval > 1000 {
+		panic("create_bundle_slot_interval is supposed to be less than 1000")
 	}
 	if s.BundleNotSealedReuploadThreshold <= 60 {
 		panic("Bundle_not_sealed_reupload_threshold is supposed larger than 60 (s)")
@@ -79,6 +75,13 @@ func (s *SyncerConfig) GetCreateBundleInterval() uint64 {
 	return s.CreateBundleBlockInterval
 }
 
+func (s *SyncerConfig) GetBlockSyncThreshold() uint {
+	if s.BlockSyncThreshold == 0 {
+		return DefaultBlockSyncThreshold
+	}
+	return s.BlockSyncThreshold
+}
+
 func (s *SyncerConfig) GetReUploadBundleThresh() int64 {
 	if s.BundleNotSealedReuploadThreshold == 0 {
 		return DefaultReUploadBundleThreshold
@@ -87,15 +90,16 @@ func (s *SyncerConfig) GetReUploadBundleThresh() int64 {
 }
 
 type ServerConfig struct {
-	Chain                  string      `json:"chain"`
-	BucketName             string      `json:"bucket_name"`
-	BundleServiceEndpoints []string    `json:"bundle_service_endpoints"` // BundleServiceEndpoints is a list of bundle service address
-	CacheConfig            CacheConfig `json:"cache_config"`
-	DBConfig               DBConfig    `json:"db_config"`
+	Chain                  string        `json:"chain"`
+	BucketName             string        `json:"bucket_name"`
+	BundleServiceEndpoints []string      `json:"bundle_service_endpoints"` // BundleServiceEndpoints is a list of bundle service address
+	CacheConfig            CacheConfig   `json:"cache_config"`
+	DBConfig               DBConfig      `json:"db_config"`
+	MetricsConfig          MetricsConfig `json:"metrics_config"`
 }
 
 func (s *ServerConfig) Validate() {
-	if !strings.EqualFold(s.Chain, ETH) && !strings.EqualFold(s.Chain, BSC) {
+	if !strings.EqualFold(s.Chain, BSC) {
 		panic("chain not support")
 	}
 	if len(s.BucketName) == 0 {
@@ -187,6 +191,9 @@ func ParseSyncerConfigFromFile(filePath string) *SyncerConfig {
 	}
 	if config.PrivateKey == "" { // read private key from ENV
 		config.PrivateKey = os.Getenv(EnvVarPrivateKey)
+	}
+	if config.ConcurrencyLimit == 0 {
+		config.ConcurrencyLimit = DefaultConcurrencyLimit
 	}
 	return &config
 }

@@ -2,6 +2,9 @@ package util
 
 import (
 	"crypto/sha256"
+	"fmt"
+	"math/big"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -77,4 +80,40 @@ func HexToUint64(hexStr string) (uint64, error) {
 // Int64ToHex converts int64 to hex string
 func Int64ToHex(int64 int64) string {
 	return "0x" + strconv.FormatInt(int64, 16)
+}
+
+// Uint64ToHex converts uint64 to hex string
+func Uint64ToHex(uint64 uint64) string {
+	return "0x" + strconv.FormatUint(uint64, 16)
+}
+
+// Uint64ToHexNonce converts uint64 to hex string
+func Uint64ToHexNonce(uint64 uint64) string {
+	return fmt.Sprintf("0x%016x", uint64)
+}
+
+// IsHexHash verifies whether a string can represent a valid hex hash
+func IsHexHash(hash string) bool {
+	match, _ := regexp.MatchString(`^0x[0-9a-fA-F]{64}$`, hash)
+	return match
+}
+
+// Uint64ToHexPtr safely converts a *uint64 to a *string
+func Uint64ToHexPtr(u *uint64) *string {
+	if u == nil {
+		return nil
+	}
+	s := Uint64ToHex(*u)
+	return &s
+}
+
+func HexutilBigToBigInt(hexBig *hexutil.Big) *big.Int {
+	if hexBig == nil {
+		return nil
+	}
+	return hexBig.ToInt()
+}
+
+func Uint64ToBigInt(u hexutil.Uint64) *big.Int {
+	return new(big.Int).SetUint64(uint64(u))
 }

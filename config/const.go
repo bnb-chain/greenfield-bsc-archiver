@@ -10,8 +10,11 @@ const (
 	EnvVarDBUserPass     = "DB_PASSWORD"
 	EnvVarPrivateKey     = "PRIVATE_KEY"
 
-	DefaultCreateBundleSlotInterval = 30
+	DefaultCreateBundleSlotInterval = 2500 // around 10MB
+
+	DefaultBlockSyncThreshold = 1000
 
 	DefaultReUploadBundleThreshold = 3600 // in second
 
+	DefaultConcurrencyLimit = 5
 )

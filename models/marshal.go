@@ -37,3 +37,22 @@ func (m *SimplifiedBlock) MarshalJSON() ([]byte, error) {
 		Alias: (*Alias)(m),
 	})
 }
+
+func (t *Transaction) MarshalJSON() ([]byte, error) {
+	type Alias Transaction
+	if t.Type == "0x0" {
+		// 当类型为 "0x0" 时，省略 AccessList
+		return json.Marshal(&struct {
+			*Alias
+			AccessList *[]*AccessTuple `json:"accessList,omitempty"`
+		}{
+			Alias: (*Alias)(t),
+		})
+	}
+
+	return json.Marshal(&struct {
+		*Alias
+	}{
+		Alias: (*Alias)(t),
+	})
+}

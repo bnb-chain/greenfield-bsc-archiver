@@ -192,8 +192,9 @@ func BuildBlock(block *RpcBlock) *models.Block {
 		}
 		// only DynamicFeeTx & BlobTx & AccessListTx contains Accesses
 		if txs[i].Type == "0x1" || txs[i].Type == "0x2" || txs[i].Type == "0x3" {
+			accessList := make([]*models.AccessTuple, 0)
 			if tx.Accesses != nil {
-				accessList := make([]*models.AccessTuple, len(*tx.Accesses))
+				accessList = make([]*models.AccessTuple, len(*tx.Accesses))
 				for in, tuple := range *tx.Accesses {
 					for j, storageKey := range tuple.StorageKeys {
 						accessList[in].StorageKeys[j] = storageKey.Hex()

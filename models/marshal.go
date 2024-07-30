@@ -19,3 +19,21 @@ func (m *Block) MarshalJSON() ([]byte, error) {
 		Alias: (*Alias)(m),
 	})
 }
+
+func (m *SimplifiedBlock) MarshalJSON() ([]byte, error) {
+	type Alias SimplifiedBlock
+	if m.Withdrawals == nil {
+		return json.Marshal(&struct {
+			*Alias
+			Withdrawals *[]*Withdrawal `json:"withdrawals,omitempty"`
+		}{
+			Alias: (*Alias)(m),
+		})
+	}
+
+	return json.Marshal(&struct {
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	})
+}

@@ -206,6 +206,23 @@ func BuildBlock(block *RpcBlock) *models.Block {
 			chainID := tx.ChainID.String()
 			txs[i].ChainID = &chainID
 		}
+		if tx.BlobFeeCap != nil {
+			maxPriorityFeePerGas := tx.BlobFeeCap.String()
+			txs[i].MaxPriorityFeePerGas = &maxPriorityFeePerGas
+		}
+		blobHashes := make([]string, 0)
+		if tx.BlobHashes != nil {
+			blobHashes = make([]string, len(*tx.BlobHashes))
+			for in, hash := range *tx.BlobHashes {
+				blobHashes[in] = hash.String()
+			}
+		}
+		txs[i].BlobVersionedHashes = blobHashes
+		if tx.YParity != nil {
+			yParity := tx.YParity.String()
+			txs[i].YParity = &yParity
+		}
+
 	}
 
 	withdrawals := make([]*models.Withdrawal, 0)
@@ -369,6 +386,8 @@ type RpcBlock struct {
 	Uncles      *[]Header          `json:"uncles,omitempty"`
 }
 
+// Tx represents a transaction that can be one of four types: LegacyTx, DynamicFeeTx, BlobTx, or AccessListTx.
+// Each type corresponds to different functionalities and structures within the transaction system.
 type Tx struct {
 	BlockHash        *common.Hash      `json:"blockHash"`
 	BlockNumber      *hexutil.Uint64   `json:"blockNumber"`
@@ -389,6 +408,10 @@ type Tx struct {
 	V                hexutil.Big       `json:"v"`
 	R                hexutil.Big       `json:"r"`
 	S                hexutil.Big       `json:"s"`
+	// BlobTx
+	BlobFeeCap *hexutil.Big   `json:"maxFeePerBlobGas,omitempty"`
+	BlobHashes *[]common.Hash `json:"blobVersionedHashes,omitempty"`
+	YParity    *hexutil.Big   `json:"yParity,omitempty"`
 }
 
 func BlockToSimplifiedBlock(block *models.Block) *models.SimplifiedBlock {

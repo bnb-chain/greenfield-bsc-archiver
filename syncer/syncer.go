@@ -156,6 +156,7 @@ func (b *BlockIndexer) StartLoop() {
 			time.Sleep(LoopSleepTime)
 		}
 	}()
+	time.Sleep(MapSleepTime)
 	go func() {
 		syncTicker := time.NewTicker(LoopSleepTime)
 		for range syncTicker.C {
@@ -289,7 +290,7 @@ func (b *BlockIndexer) getNextBlockNum() (uint64, error) {
 	latestProcessedBlock, err := b.blockDao.GetLatestProcessedBlock()
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return 0, nil
+			return b.config.StartBlock, nil
 		}
 		return 0, fmt.Errorf("failed to get latest polled block from db, error: %s", err.Error())
 	}

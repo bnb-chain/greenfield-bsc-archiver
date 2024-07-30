@@ -190,17 +190,19 @@ func BuildBlock(block *RpcBlock) *models.Block {
 			txIndex := tx.TransactionIndex.String()
 			txs[i].TransactionIndex = &txIndex
 		}
-
-		if tx.Accesses != nil {
-			accessList := make([]*models.AccessTuple, len(*tx.Accesses))
-			for in, tuple := range *tx.Accesses {
-				for j, storageKey := range tuple.StorageKeys {
-					accessList[in].StorageKeys[j] = storageKey.Hex()
+		// only DynamicFeeTx & BlobTx & AccessListTx contains Accesses
+		if txs[i].Type == "0x3" {
+			if tx.Accesses != nil {
+				accessList := make([]*models.AccessTuple, len(*tx.Accesses))
+				for in, tuple := range *tx.Accesses {
+					for j, storageKey := range tuple.StorageKeys {
+						accessList[in].StorageKeys[j] = storageKey.Hex()
+					}
+					accessList[in].Address = tuple.Address.Hex()
 				}
-				accessList[in].Address = tuple.Address.Hex()
-			}
 
-			txs[i].AccessList = accessList
+				txs[i].AccessList = accessList
+			}
 		}
 		if tx.ChainID != nil {
 			chainID := tx.ChainID.String()
@@ -210,31 +212,32 @@ func BuildBlock(block *RpcBlock) *models.Block {
 			maxPriorityFeePerGas := tx.BlobFeeCap.String()
 			txs[i].MaxPriorityFeePerGas = &maxPriorityFeePerGas
 		}
-		blobHashes := make([]string, 0)
-		if tx.BlobHashes != nil {
-			blobHashes = make([]string, len(*tx.BlobHashes))
-			for in, hash := range *tx.BlobHashes {
-				blobHashes[in] = hash.String()
+		if txs[i].Type == "0x3" {
+			blobHashes := make([]string, 0)
+			if tx.BlobHashes != nil {
+				blobHashes = make([]string, len(*tx.BlobHashes))
+				for in, hash := range *tx.BlobHashes {
+					blobHashes[in] = hash.String()
+				}
 			}
+			txs[i].BlobVersionedHashes = &blobHashes
 		}
-		txs[i].BlobVersionedHashes = blobHashes
 		if tx.YParity != nil {
 			yParity := tx.YParity.String()
 			txs[i].YParity = &yParity
 		}
-
 	}
 
-	withdrawals := make([]*models.Withdrawal, 0)
-	if block.Withdrawals != nil {
-		withdrawals = make([]*models.Withdrawal, len(*block.Withdrawals))
-		for i, withdrawal := range *block.Withdrawals {
-			withdrawals[i] = &models.Withdrawal{
+	var withdrawals []*models.Withdrawal
+	if block.Withdrawals != nil || block.WithdrawalsHash != nil {
+		withdrawals = make([]*models.Withdrawal, 0)
+		for _, withdrawal := range *block.Withdrawals {
+			withdrawals = append(withdrawals, &models.Withdrawal{
 				Index:     util.Uint64ToHex(withdrawal.Index),
 				Validator: util.Uint64ToHex(withdrawal.Validator),
 				Address:   withdrawal.Address.Hex(),
 				Amount:    util.Uint64ToHex(withdrawal.Amount),
-			}
+			})
 		}
 	}
 	var uncles []*models.Header

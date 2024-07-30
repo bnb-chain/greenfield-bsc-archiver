@@ -20,10 +20,10 @@ import (
 type Transaction struct {
 
 	// access list
-	AccessList []*AccessTuple `json:"accessList"`
+	AccessList []*AccessTuple `json:"accessList,omitempty"`
 
 	// blob versioned hashes
-	BlobVersionedHashes []string `json:"blobVersionedHashes"`
+	BlobVersionedHashes *[]string `json:"blobVersionedHashes,omitempty"`
 
 	// block hash
 	// Example: 0x1d59179991e4b016d5fcf4aba59db622f064e654a82714e468c07f9f54efebd2

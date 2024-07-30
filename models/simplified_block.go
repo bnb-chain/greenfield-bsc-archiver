@@ -114,7 +114,7 @@ type SimplifiedBlock struct {
 	Uncles []*Header `json:"uncles"`
 
 	// withdrawals
-	Withdrawals []*Withdrawal `json:"withdrawals"`
+	Withdrawals []*Withdrawal `json:"withdrawals,omitempty"`
 
 	// withdrawals root
 	// Example: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef

@@ -191,7 +191,7 @@ func BuildBlock(block *RpcBlock) *models.Block {
 			txs[i].TransactionIndex = &txIndex
 		}
 		// only DynamicFeeTx & BlobTx & AccessListTx contains Accesses
-		if txs[i].Type == "0x3" {
+		if txs[i].Type == "0x1" || txs[i].Type == "0x2" || txs[i].Type == "0x3" {
 			if tx.Accesses != nil {
 				accessList := make([]*models.AccessTuple, len(*tx.Accesses))
 				for in, tuple := range *tx.Accesses {

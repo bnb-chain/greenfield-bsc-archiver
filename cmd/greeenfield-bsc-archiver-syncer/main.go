@@ -43,10 +43,6 @@ func main() {
 	db := config.InitDBWithConfig(&cfg.DBConfig, true)
 	blockDB := syncerdb.NewBlockSvcDB(db)
 	bs := syncer.NewBlockIndexer(blockDB, cfg)
-	err := os.MkdirAll(cfg.TempDir, os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
 	go bs.StartLoop()
 
 	if cfg.MetricsConfig.Enable {

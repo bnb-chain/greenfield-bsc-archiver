@@ -30,10 +30,11 @@ const (
 
 	DBRetryTimes = 3
 
-	LoopSleepTime = 10 * time.Millisecond
-	WaitSleepTime = 100 * time.Millisecond
-	MapSleepTime  = 3 * time.Second
-	BSCPauseTime  = 3 * time.Second
+	LoopSleepTime           = 10 * time.Millisecond
+	WaitSleepTime           = 100 * time.Millisecond
+	MapSleepTime            = 3 * time.Second
+	BSCPauseTime            = 3 * time.Second
+	GreenfieldBlockInterval = 3 * time.Second
 
 	ETHPauseTime         = 90 * time.Second
 	RPCTimeout           = 20 * time.Second
@@ -173,10 +174,6 @@ func (b *BlockIndexer) StartLoop() {
 			b.blocksLock.Lock()
 			delete(b.blocks, blockID)
 			b.blocksLock.Unlock()
-			//blockID, err := b.getNextBlockNum()
-			//if err != nil {
-			//	return err
-			//}
 			for {
 				err := b.process(b.bundleDetail.name, blockID, block)
 				if err != nil {
@@ -274,6 +271,8 @@ func (b *BlockIndexer) process(bundleName string, blockID uint64, block *types.R
 			startBlockID:    startBlockID,
 			finalizeBlockID: endBlockID,
 		}
+		// wait for bundle to submit it to the greenfield chain
+		time.Sleep(GreenfieldBlockInterval)
 	}
 	return nil
 }

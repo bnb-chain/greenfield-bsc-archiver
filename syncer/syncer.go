@@ -34,7 +34,7 @@ const (
 	WaitSleepTime           = 100 * time.Millisecond
 	MapSleepTime            = 3 * time.Second
 	BSCPauseTime            = 3 * time.Second
-	GreenfieldBlockInterval = 3 * time.Second
+	GreenfieldBlockInterval = 10 * time.Second
 
 	ETHPauseTime         = 90 * time.Second
 	RPCTimeout           = 20 * time.Second

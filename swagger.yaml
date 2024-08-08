@@ -411,6 +411,19 @@ definitions:
       s:
         type: string
         example: "0x3eabf58a7345ee0469c9276178a47e6ec3214b1b75d98d80921a38a89b30b"
+      maxFeePerBlobGas:
+        type: string
+        example: "0x12a05f200"
+        x-nullable: true
+      blobVersionedHashes:
+        type: array
+        items:
+          type: string
+          example: "0x01f3a7dedb08ff148ac90141d662c4ba4c872c037b7f0ebaacb256c05fde497f"
+      yParity:
+        type: string
+        example: "0x12a05f200"
+        x-nullable: true
   header:
     type: object
     properties:

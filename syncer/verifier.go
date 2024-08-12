@@ -273,7 +273,8 @@ func (b *BlockIndexer) reUploadBundle(bundleName string) error {
 		return err
 	}
 
-	newBundleName := bundleName + "_calibrated_" + util.Int64ToString(time.Now().Unix())
+	parts := strings.Split(bundleName, "_")
+	newBundleName := parts[0] + "_" + parts[1] + "_" + parts[2] + "_calibrated_" + util.Int64ToString(time.Now().Unix())
 	startBlockID, endBlockID, err := types.ParseBundleName(bundleName)
 	if err != nil {
 		return err

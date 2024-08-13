@@ -21,6 +21,14 @@ Provides RPC interfaces compatible with Ethereum calls. Variables are generated 
 4. eth_getBlockByHash
 5. /bsc/v1/blocks/{block_id}/bundle/name
 
+## Support Network
+| Network  | Endpoint    | Bucket      |
+|----------|-------------|-------------|
+| BSC      | https://gnfd-bsc-archiver-mainnet.bnbchain.org/ | [mainnet-bsc-blocks](https://greenfieldscan.com/bucket/0x0000000000000000000000000000000000000000000000000000000000007c09) |
+
+
+## Greenfield BSC Archiver API
+
 ### Example
 Method: POST
 URL: https://gnfd-bsc-archiver-testnet.bnbchain.org/
@@ -87,6 +95,50 @@ response
         "withdrawals": null
     }
 }
+```
+
+## Access to Block Data Directly in Greenfield
+
+In scenarios where the Bundle Service is inaccessible, direct access to block data stored in Greenfield may be necessary, as blocks are consolidated into a bundle object.
+User can retrieve the bundle object and extract specific blocks from it.
+
+### Namimg pattern
+
+The bundle objects uploaded to Greenfield adhere to the naming pattern `blocks_s{startSlot}_e{endSlot}`. For instance, if a bundle encompasses blocks within 30 slots, the bundle object could be named `blocks_s8864048_e8864077`, where 8864048 represents the start slot and 8864077 denotes the end slot. The individual blobs contained within this bundle follow the naming convention `blob_h{slot}_i{index}`, such as `blob_h8864074_i3`.
+
+### Retrieving Blocks via Bundle SDK
+The [bundle SDK](https://github.com/bnb-chain/greenfield-bundle-sdk) offers commands to fetch the bundle object from Greenfield. Follow the steps below:
+
+
+```bash
+git submodule update --init --recursive
+cd bundle-sdk && make build
+
+./build/bundler download -bucket mainnet-bsc-blocks -object blocks_s6907440_e6907459 -chain-id greenfield_1017-1 -rpc-url https://greenfield-chain.bnbchain.org:443  -output ./tmp
+```
+
+Once the bundle is downloaded and extracted, all original block files can be found within the `tmp` directory.
+
+
+## Setting Up Block Syncer
+
+### Requirement
+
+Go version above 1.22
+
+### Create a bucket on Greenfield
+
+if you don't have a bucket yet, set up one for blob storage. There are a few ways to create one, below shows examples via [greenfield-go-sdk](https://github.com/bnb-chain/greenfield-go-sdk)
+and using provided script.
+
+#### Use Dcellar
+Visit https://dcellar.io/ and create a bucket with at least 100G read quota per month.
+
+#### use provided script
+You can use the script, before runinng it, modify the the scripts/.env file(the GRANTEE_BUNDLE_ACCOUNT does not need to modified at this moment):
+
+```shell
+bash scripts/set_up.sh --create_bucket
 ```
 
 ### Get a Bundler Account

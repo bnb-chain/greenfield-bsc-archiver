@@ -190,34 +190,54 @@ func BuildBlock(block *RpcBlock) *models.Block {
 			txIndex := tx.TransactionIndex.String()
 			txs[i].TransactionIndex = &txIndex
 		}
-
-		if tx.Accesses != nil {
-			accessList := make([]*models.AccessTuple, len(*tx.Accesses))
-			for in, tuple := range *tx.Accesses {
-				for j, storageKey := range tuple.StorageKeys {
-					accessList[in].StorageKeys[j] = storageKey.Hex()
+		// only DynamicFeeTx & BlobTx & AccessListTx contains Accesses
+		if txs[i].Type == "0x1" || txs[i].Type == "0x2" || txs[i].Type == "0x3" {
+			if tx.Accesses != nil {
+				accessList := make([]*models.AccessTuple, len(*tx.Accesses))
+				for in, tuple := range *tx.Accesses {
+					for j, storageKey := range tuple.StorageKeys {
+						accessList[in].StorageKeys[j] = storageKey.Hex()
+					}
+					accessList[in].Address = tuple.Address.Hex()
 				}
-				accessList[in].Address = tuple.Address.Hex()
-			}
 
-			txs[i].AccessList = accessList
+				txs[i].AccessList = accessList
+			}
 		}
 		if tx.ChainID != nil {
 			chainID := tx.ChainID.String()
 			txs[i].ChainID = &chainID
 		}
+		if tx.BlobFeeCap != nil {
+			maxPriorityFeePerGas := tx.BlobFeeCap.String()
+			txs[i].MaxPriorityFeePerGas = &maxPriorityFeePerGas
+		}
+		if txs[i].Type == "0x3" {
+			blobHashes := make([]string, 0)
+			if tx.BlobHashes != nil {
+				blobHashes = make([]string, len(*tx.BlobHashes))
+				for in, hash := range *tx.BlobHashes {
+					blobHashes[in] = hash.String()
+				}
+			}
+			txs[i].BlobVersionedHashes = &blobHashes
+		}
+		if tx.YParity != nil {
+			yParity := tx.YParity.String()
+			txs[i].YParity = &yParity
+		}
 	}
 
 	var withdrawals []*models.Withdrawal
-	if block.Withdrawals != nil {
-		withdrawals := make([]*models.Withdrawal, len(*block.Withdrawals))
-		for i, withdrawal := range *block.Withdrawals {
-			withdrawals[i] = &models.Withdrawal{
+	if block.Withdrawals != nil || block.WithdrawalsHash != nil {
+		withdrawals = make([]*models.Withdrawal, 0)
+		for _, withdrawal := range *block.Withdrawals {
+			withdrawals = append(withdrawals, &models.Withdrawal{
 				Index:     util.Uint64ToHex(withdrawal.Index),
 				Validator: util.Uint64ToHex(withdrawal.Validator),
 				Address:   withdrawal.Address.Hex(),
 				Amount:    util.Uint64ToHex(withdrawal.Amount),
-			}
+			})
 		}
 	}
 	var uncles []*models.Header
@@ -369,6 +389,8 @@ type RpcBlock struct {
 	Uncles      *[]Header          `json:"uncles,omitempty"`
 }
 
+// Tx represents a transaction that can be one of four types: LegacyTx, DynamicFeeTx, BlobTx, or AccessListTx.
+// Each type corresponds to different functionalities and structures within the transaction system.
 type Tx struct {
 	BlockHash        *common.Hash      `json:"blockHash"`
 	BlockNumber      *hexutil.Uint64   `json:"blockNumber"`
@@ -389,6 +411,10 @@ type Tx struct {
 	V                hexutil.Big       `json:"v"`
 	R                hexutil.Big       `json:"r"`
 	S                hexutil.Big       `json:"s"`
+	// BlobTx
+	BlobFeeCap *hexutil.Big   `json:"maxFeePerBlobGas,omitempty"`
+	BlobHashes *[]common.Hash `json:"blobVersionedHashes,omitempty"`
+	YParity    *hexutil.Big   `json:"yParity,omitempty"`
 }
 
 func BlockToSimplifiedBlock(block *models.Block) *models.SimplifiedBlock {

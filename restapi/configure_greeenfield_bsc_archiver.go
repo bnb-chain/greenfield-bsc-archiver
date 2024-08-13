@@ -103,7 +103,7 @@ func configureServer(s *http.Server, scheme, addr string) {
 			panic(err)
 		}
 	default:
-		panic("currently only local cache is support.")
+		//panic("currently only local cache is support.")
 	}
 	service.BlockSvc = service.NewBlockService(blockDB, bundleClient, spClient, cacheSvc, cfg)
 }

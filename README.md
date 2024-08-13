@@ -21,16 +21,24 @@ Provides RPC interfaces compatible with Ethereum calls. Variables are generated 
 4. eth_getBlockByHash
 5. /bsc/v1/blocks/{block_id}/bundle/name
 
+## Support Network
+| Network  | Endpoint    | Bucket      |
+|----------|-------------|-------------|
+| BSC      | https://gnfd-bsc-archiver-mainnet.bnbchain.org/ | [mainnet-bsc-blocks](https://greenfieldscan.com/bucket/0x0000000000000000000000000000000000000000000000000000000000007c09) |
+
+
+## Greenfield BSC Archiver API
+
 ### Example
 Method: POST
-URL: https://gnfd-bsc-archiver-testnet.bnbchain.org/
+URL: https://gnfd-bsc-archiver-mainnet.bnbchain.org/
 **eth_getBlockByNumber**
 request
 ```json
 {
     "method": "eth_getBlockByNumber",
     "params": [
-        "0x2625A00"
+        "0x1"
     ],
     "id": 100,
     "jsonrpc": "2.0"
@@ -44,49 +52,91 @@ response
     "id": 100,
     "jsonrpc": "2.0",
     "result": {
-        "difficulty": "0x2",
-        "extraData": "0xd883010002846765746888676f312e31332e34856c696e757800000000000000924cd67a1565fdd24dd59327a298f1d702d6b7a721440c063713cecb7229f4e162ae38be78f6f71aa5badeaaef35cea25061ee2100622a4a1631a07e862b517401",
-        "gasLimit": "0x25ff7a7",
-        "gasUsed": "0x300b37",
-        "hash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-        "logsBloom": "0x08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000",
-        "miner": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-        "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "nonce": "0x0000000000000000",
-        "number": "0x1",
-        "parentHash": "0x0d21840abff46b96c84b2ac9e10e4f5cdaeb5693cb665db62a2f3b02d2d57b5b",
-        "receiptsRoot": "0xfc7c0fda97e67ed8ae06e7a160218b3df995560dfcb209a3b0dddde969ec6b00",
-        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
-        "size": "0x558",
-        "stateRoot": "0x1db428ea79cb2e8cc233ae7f4db7c3567adfcb699af668a9f583fdae98e95588",
-        "timestamp": "0x5f49ca59",
-        "totalDifficulty": "0x3",
-        "transactions": [
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0xbaf8ffa0b475a67cfeac3992d24422804452f0982e4e21a8816db2e0c9e5f224",
-                "input": "0xe1c7392a",
-                "nonce": "0x0",
-                "r": "0xba64c6614028e6f7fa4cf2b218719160b9850c591279218def6894586ab73157",
-                "s": "0x69cd1b3041eaa9b282a522c49b294e3c51801a1347bb8999015a0bd29bed3bbf",
-                "to": "0x0000000000000000000000000000000000001000",
-                "transactionIndex": "0x0",
-                "type": "0x0",
-                "v": "0x93",
-                "value": "0x0"
-            }
-        ],
-        "transactionsRoot": "0x53a8743b873570daa630948b1858eaf5dc9bb0bca2093a197e507b2466c110a0",
-        "uncles": [],
-        "withdrawals": null
+    "difficulty": "0x2",
+    "extraData": "0xd883010002846765746888676f312e31332e34856c696e757800000000000000924cd67a1565fdd24dd59327a298f1d702d6b7a721440c063713cecb7229f4e162ae38be78f6f71aa5badeaaef35cea25061ee2100622a4a1631a07e862b517401",
+    "gasLimit": "0x25ff7a7",
+    "gasUsed": "0x300b37",
+    "hash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
+    "logsBloom": "0x08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000",
+    "miner": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
+    "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "nonce": "0x0000000000000000",
+    "number": "0x1",
+    "parentHash": "0x0d21840abff46b96c84b2ac9e10e4f5cdaeb5693cb665db62a2f3b02d2d57b5b",
+    "receiptsRoot": "0xfc7c0fda97e67ed8ae06e7a160218b3df995560dfcb209a3b0dddde969ec6b00",
+    "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+    "size": "0x558",
+    "stateRoot": "0x1db428ea79cb2e8cc233ae7f4db7c3567adfcb699af668a9f583fdae98e95588",
+    "timestamp": "0x5f49ca59",
+    "totalDifficulty": "0x3",
+    "transactions": [
+        {
+            "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
+            "blockNumber": "0x1",
+            "chainId": "0x38",
+            "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
+            "gas": "0x7fffffffffffffff",
+            "gasPrice": "0x0",
+            "hash": "0xbaf8ffa0b475a67cfeac3992d24422804452f0982e4e21a8816db2e0c9e5f224",
+            "input": "0xe1c7392a",
+            "nonce": "0x0",
+            "r": "0xba64c6614028e6f7fa4cf2b218719160b9850c591279218def6894586ab73157",
+            "s": "0x69cd1b3041eaa9b282a522c49b294e3c51801a1347bb8999015a0bd29bed3bbf",
+            "to": "0x0000000000000000000000000000000000001000",
+            "transactionIndex": "0x0",
+            "type": "0x0",
+            "v": "0x93",
+            "value": "0x0"
+        },
+    ],
+    "transactionsRoot": "0x53a8743b873570daa630948b1858eaf5dc9bb0bca2093a197e507b2466c110a0",
+    "uncles": []
     }
 }
+```
+
+## Access to Block Data Directly in Greenfield
+
+In scenarios where the Bundle Service is inaccessible, direct access to block data stored in Greenfield may be necessary, as blocks are consolidated into a bundle object.
+User can retrieve the bundle object and extract specific blocks from it.
+
+### Namimg pattern
+
+The bundle objects uploaded to Greenfield adhere to the naming pattern `blocks_s{startSlot}_e{endSlot}`. For instance, if a bundle encompasses blocks within 30 slots, the bundle object could be named `blocks_s8864048_e8864077`, where 8864048 represents the start slot and 8864077 denotes the end slot. The individual blocks contained within this bundle follow the naming convention `block_h{}`, such as `block_h100`.
+
+### Retrieving Blocks via Bundle SDK
+The [bundle SDK](https://github.com/bnb-chain/greenfield-bundle-sdk) offers commands to fetch the bundle object from Greenfield. Follow the steps below:
+
+
+```bash
+git submodule update --init --recursive
+cd bundle-sdk && make build
+
+./build/bundler download -bucket mainnet-bsc-blocks -object blocks_s6907440_e6907459 -chain-id greenfield_1017-1 -rpc-url https://greenfield-chain.bnbchain.org:443  -output ./tmp
+```
+
+Once the bundle is downloaded and extracted, all original block files can be found within the `tmp` directory.
+
+
+## Setting Up Block Syncer
+
+### Requirement
+
+Go version above 1.22
+
+### Create a bucket on Greenfield
+
+if you don't have a bucket yet, set up one for block storage. There are a few ways to create one, below shows examples via [greenfield-go-sdk](https://github.com/bnb-chain/greenfield-go-sdk)
+and using provided script.
+
+#### Use Dcellar
+Visit https://dcellar.io/ and create a bucket with at least 100G read quota per month.
+
+#### use provided script
+You can use the script, before runinng it, modify the the scripts/.env file(the GRANTEE_BUNDLE_ACCOUNT does not need to modified at this moment):
+
+```shell
+bash scripts/set_up.sh --create_bucket
 ```
 
 ### Get a Bundler Account

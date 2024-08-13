@@ -31,14 +31,14 @@ Provides RPC interfaces compatible with Ethereum calls. Variables are generated 
 
 ### Example
 Method: POST
-URL: https://gnfd-bsc-archiver-testnet.bnbchain.org/
+URL: https://gnfd-bsc-archiver-mainnet.bnbchain.org/
 **eth_getBlockByNumber**
 request
 ```json
 {
     "method": "eth_getBlockByNumber",
     "params": [
-        "0x2625A00"
+        "0x1"
     ],
     "id": 100,
     "jsonrpc": "2.0"
@@ -52,47 +52,45 @@ response
     "id": 100,
     "jsonrpc": "2.0",
     "result": {
-        "difficulty": "0x2",
-        "extraData": "0xd883010002846765746888676f312e31332e34856c696e757800000000000000924cd67a1565fdd24dd59327a298f1d702d6b7a721440c063713cecb7229f4e162ae38be78f6f71aa5badeaaef35cea25061ee2100622a4a1631a07e862b517401",
-        "gasLimit": "0x25ff7a7",
-        "gasUsed": "0x300b37",
-        "hash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-        "logsBloom": "0x08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000",
-        "miner": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-        "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "nonce": "0x0000000000000000",
-        "number": "0x1",
-        "parentHash": "0x0d21840abff46b96c84b2ac9e10e4f5cdaeb5693cb665db62a2f3b02d2d57b5b",
-        "receiptsRoot": "0xfc7c0fda97e67ed8ae06e7a160218b3df995560dfcb209a3b0dddde969ec6b00",
-        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
-        "size": "0x558",
-        "stateRoot": "0x1db428ea79cb2e8cc233ae7f4db7c3567adfcb699af668a9f583fdae98e95588",
-        "timestamp": "0x5f49ca59",
-        "totalDifficulty": "0x3",
-        "transactions": [
-            {
-                "accessList": null,
-                "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
-                "blockNumber": "0x1",
-                "chainId": "0x38",
-                "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
-                "gas": "0x7fffffffffffffff",
-                "gasPrice": "0x0",
-                "hash": "0xbaf8ffa0b475a67cfeac3992d24422804452f0982e4e21a8816db2e0c9e5f224",
-                "input": "0xe1c7392a",
-                "nonce": "0x0",
-                "r": "0xba64c6614028e6f7fa4cf2b218719160b9850c591279218def6894586ab73157",
-                "s": "0x69cd1b3041eaa9b282a522c49b294e3c51801a1347bb8999015a0bd29bed3bbf",
-                "to": "0x0000000000000000000000000000000000001000",
-                "transactionIndex": "0x0",
-                "type": "0x0",
-                "v": "0x93",
-                "value": "0x0"
-            }
-        ],
-        "transactionsRoot": "0x53a8743b873570daa630948b1858eaf5dc9bb0bca2093a197e507b2466c110a0",
-        "uncles": [],
-        "withdrawals": null
+    "difficulty": "0x2",
+    "extraData": "0xd883010002846765746888676f312e31332e34856c696e757800000000000000924cd67a1565fdd24dd59327a298f1d702d6b7a721440c063713cecb7229f4e162ae38be78f6f71aa5badeaaef35cea25061ee2100622a4a1631a07e862b517401",
+    "gasLimit": "0x25ff7a7",
+    "gasUsed": "0x300b37",
+    "hash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
+    "logsBloom": "0x08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000",
+    "miner": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
+    "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "nonce": "0x0000000000000000",
+    "number": "0x1",
+    "parentHash": "0x0d21840abff46b96c84b2ac9e10e4f5cdaeb5693cb665db62a2f3b02d2d57b5b",
+    "receiptsRoot": "0xfc7c0fda97e67ed8ae06e7a160218b3df995560dfcb209a3b0dddde969ec6b00",
+    "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+    "size": "0x558",
+    "stateRoot": "0x1db428ea79cb2e8cc233ae7f4db7c3567adfcb699af668a9f583fdae98e95588",
+    "timestamp": "0x5f49ca59",
+    "totalDifficulty": "0x3",
+    "transactions": [
+        {
+            "blockHash": "0x04055304e432294a65ff31069c4d3092ff8b58f009cdb50eba5351e0332ad0f6",
+            "blockNumber": "0x1",
+            "chainId": "0x38",
+            "from": "0x2a7cdd959bFe8D9487B2a43B33565295a698F7e2",
+            "gas": "0x7fffffffffffffff",
+            "gasPrice": "0x0",
+            "hash": "0xbaf8ffa0b475a67cfeac3992d24422804452f0982e4e21a8816db2e0c9e5f224",
+            "input": "0xe1c7392a",
+            "nonce": "0x0",
+            "r": "0xba64c6614028e6f7fa4cf2b218719160b9850c591279218def6894586ab73157",
+            "s": "0x69cd1b3041eaa9b282a522c49b294e3c51801a1347bb8999015a0bd29bed3bbf",
+            "to": "0x0000000000000000000000000000000000001000",
+            "transactionIndex": "0x0",
+            "type": "0x0",
+            "v": "0x93",
+            "value": "0x0"
+        },
+    ],
+    "transactionsRoot": "0x53a8743b873570daa630948b1858eaf5dc9bb0bca2093a197e507b2466c110a0",
+    "uncles": []
     }
 }
 ```

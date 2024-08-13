@@ -104,7 +104,7 @@ User can retrieve the bundle object and extract specific blocks from it.
 
 ### Namimg pattern
 
-The bundle objects uploaded to Greenfield adhere to the naming pattern `blocks_s{startSlot}_e{endSlot}`. For instance, if a bundle encompasses blocks within 30 slots, the bundle object could be named `blocks_s8864048_e8864077`, where 8864048 represents the start slot and 8864077 denotes the end slot. The individual blobs contained within this bundle follow the naming convention `blob_h{slot}_i{index}`, such as `blob_h8864074_i3`.
+The bundle objects uploaded to Greenfield adhere to the naming pattern `blocks_s{startSlot}_e{endSlot}`. For instance, if a bundle encompasses blocks within 30 slots, the bundle object could be named `blocks_s8864048_e8864077`, where 8864048 represents the start slot and 8864077 denotes the end slot. The individual blocks contained within this bundle follow the naming convention `block_h{}`, such as `block_h100`.
 
 ### Retrieving Blocks via Bundle SDK
 The [bundle SDK](https://github.com/bnb-chain/greenfield-bundle-sdk) offers commands to fetch the bundle object from Greenfield. Follow the steps below:
@@ -128,7 +128,7 @@ Go version above 1.22
 
 ### Create a bucket on Greenfield
 
-if you don't have a bucket yet, set up one for blob storage. There are a few ways to create one, below shows examples via [greenfield-go-sdk](https://github.com/bnb-chain/greenfield-go-sdk)
+if you don't have a bucket yet, set up one for block storage. There are a few ways to create one, below shows examples via [greenfield-go-sdk](https://github.com/bnb-chain/greenfield-go-sdk)
 and using provided script.
 
 #### Use Dcellar

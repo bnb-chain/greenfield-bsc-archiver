@@ -92,7 +92,8 @@ func (b *BlockIndexer) verify() error {
 				}
 				// check the object info from chain to make sure it is not be sealed
 				// if it is not be sealed, re-upload it
-				if objectMeta.ObjectStatus == "OBJECT_STATUS_SEALED" {
+				// "is expected to be OBJECT_STATUS_CREATED status but actually OBJECT_STATUS_SEALED status" bundle service upload issue, we need to re-upload it
+				if objectMeta.ObjectStatus == "OBJECT_STATUS_SEALED" && !strings.Contains(bundleInfo.ErrorMessage, "is expected to be OBJECT_STATUS_CREATED status but actually OBJECT_STATUS_SEALED status") {
 					return nil
 				}
 				return b.reUploadBundle(bundleName)

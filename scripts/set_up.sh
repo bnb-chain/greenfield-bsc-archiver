@@ -33,6 +33,13 @@ function create_bucket() {
     echo "bucket created"
 }
 
+function update_bucket() {
+    prepare
+    ./gnfd-cmd -c ./config.toml --home ./ --passwordfile password.txt bucket update --chargedQuota 107374182400 gnfd://${BUCKET_NAME}
+    echo "bucket updated"
+}
+
+
 function grant() {
     prepare
     ./gnfd-cmd -c ./config.toml --home ./ --passwordfile password.txt policy put --grantee ${GRANTEE_BUNDLE_ACCOUNT} --actions createObj  grn:b::"$BUCKET_NAME"
@@ -56,6 +63,9 @@ CMD=$1
 case ${CMD} in
 --create_bucket)
   create_bucket
+  ;;
+--update_bucket)
+  update_bucket
   ;;
 --grant)
   grant
